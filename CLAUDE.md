@@ -1,6 +1,6 @@
 # Middle C
 
-A browser game that teaches piano basics through a single lesson path with a virtual instructor, Rulin (modeled on a real piano teacher who has agreed to it; her name, likeness and scripts need her sign-off before anything ships publicly).
+A browser game that teaches piano basics through a single lesson path with a virtual instructor, Rulin (modeled on a real piano teacher). She signed off on her name and scripts on 2026-10-02, so public hosting is cleared; any future use of her likeness would still need her approval.
 
 ## Current state
 
@@ -36,7 +36,7 @@ No em dashes, no exclamation points, no emojis in any product copy. Sentence cas
 2. Web MIDI input: done for detection and velocity (`src/midi.js`: notes route through the same press/release path as the on-screen keys; a footer line names the connected device). Still open: judge timing in lesson 3 once input latency is reliable.
 3. Done: sampled piano (see Current state). The synth remains only as a decode fallback.
 4. Rulin reviews and edits `lessons.json`.
-5. Static hosting on a real domain; keep republishing the claude.ai artifact as the preview.
+5. Hosted on GitHub Pages at https://ddyson1.github.io/middle-c/ (`.github/workflows/pages.yml` builds and deploys on every push to main). Still open: a real domain (Pages takes a CNAME). Keep republishing the claude.ai artifact as the preview.
 
 ## Known simplifications
 
