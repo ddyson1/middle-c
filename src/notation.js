@@ -32,7 +32,7 @@ export function spell(m,prev){ const pc=m%12, oct=octOf(m); if(!isBlack(pc)) ret
 export function tuneSVG(tune, played, nextIdx, opts){
   // opts: {names, width}
   const cs=colors(), c=cs.ink, barE=tune.beats*2, bars=Math.ceil(tune.total/barE);
-  const perRow = opts.width<560 ? 2 : 4, rows=Math.ceil(bars/perRow);
+  const perRow = opts.perRow || (opts.width<560 ? 2 : 4), rows=Math.ceil(bars/perRow);
   const grand = tune.twoHands, lhOnly=tune.lhOnly;
   const rowH = grand?250:170, W=Math.max(420,opts.width);
   const left=grand?48:44, barW=(W-left-16)/perRow;

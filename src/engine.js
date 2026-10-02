@@ -15,7 +15,7 @@ export const view=$('view');
 // Rulin is text only. expr is kept on the callers for a possible future avatar, but nothing renders it.
 export function rulinRow(line, acts, expr){ return `<div class="rulin" id="rulin"><p id="rulinLine">${line}</p><div class="acts" id="rulinActs">${acts||''}</div></div>`; }
 export function say(line, expr, acts){ const p=$('rulinLine'); if(p) p.innerHTML=line; const a=$('rulinActs'); if(a&&acts!=null) a.innerHTML=acts; }
-export function setTop(sub, prog, actions){ $('instrument').hidden = ['home','settings','songbook'].includes(S.view); $('subtitle').textContent=sub||''; $('progress').hidden=!prog; if(prog){ $('progBar').style.width=(prog[0]*100/prog[1])+'%'; $('progText').textContent=`Step ${prog[0]} of ${prog[1]}`; } $('topActions').innerHTML=actions||''; }
+export function setTop(sub, prog, actions){ const bare=['home','settings','songbook'].includes(S.view); $('instrument').hidden=bare; document.body.classList.toggle('fit', !bare); $('subtitle').textContent=sub||''; $('progress').hidden=!prog; if(prog){ $('progBar').style.width=(prog[0]*100/prog[1])+'%'; $('progText').textContent=`Step ${prog[0]} of ${prog[1]}`; } $('topActions').innerHTML=actions||''; }
 function skinSelect(){ return `<select id="skinSel" aria-label="Theme">${['clean:Clean light','arcade:Arcade','primary:Primary shapes','candy:Color-coded keys','chalk:Chalkboard'].map(o=>{const [v,l]=o.split(':'); return `<option value="${v}"${v===S.skin?' selected':''}>${l}</option>`;}).join('')}</select>`; }
 
 // ---------- home ----------
@@ -81,7 +81,7 @@ function runStep(){
   renderStep();
 }
 export function nextStep(){ const L=LESSONS[S.lesson-1]; if(S.stepIdx<L.steps.length-1){ S.stepIdx++; runStep(); } else home(); }
-function renderStep(){
+export function renderStep(){
   const st=S.step; if(!st) return;
   if(st.t==='show') renderShow(st);
   else if(st.t==='drill') renderDrill();
@@ -177,6 +177,19 @@ function renderPlay(){
   const width=Math.min(1000, Math.max(360, view.clientWidth-60));
   const staff = showStaff ? `<div class="staffbox">${tuneSVG(tune, Pl.idx, Pl.idx, {names, width, font:'Figtree, sans-serif'})}</div>` : `<div class="center"><p class="instr">${tune.title}, from memory</p><p>${Pl.idx} of ${tune.ev.length} notes played</p></div>`;
   view.innerHTML=`<div class="card stage" id="stageCard" style="padding:20px 24px 14px"><div class="tunehead"><b>${tune.title}</b><div class="pills">${pills}</div></div>${staff}</div>${rulinRow(st.line, `<button class="btn ghost" id="hearBtn" type="button">Hear it first</button>${Pl.click?`<button class="btn ghost" id="clickBtn" type="button" aria-pressed="true">Click on</button>`:''}`,'neutral')}`;
+  // fit mode: once the flex layout has sized the staff box, pick the bars-per-row
+  // that renders the biggest notes inside it and redraw at that density
+  const box=view.querySelector('.staffbox');
+  if(box && document.body.classList.contains('fit')){
+    const bw=box.clientWidth||width, bh=box.clientHeight, rowH=tune.twoHands?250:170;
+    const bars=Math.ceil(tune.total/(tune.beats*2)), W=Math.max(420,width);
+    if(bh>60){ let best=null;
+      // biggest staff wins (capped at design size); a row must keep bars readable
+      for(const pr of [2,3,4,5,6,8]){ const rows=Math.ceil(bars/pr); const s=Math.min(1, bw/W, bh/(rows*rowH)); const barPx=s*(W-60)/pr; const ok=barPx>=110;
+        if(!best || (ok&&!best.ok) || (ok===best.ok && s>best.s)) best={pr,s,ok}; if(pr>=bars) break; }
+      Pl.perRow=best.pr; box.innerHTML=tuneSVG(tune,Pl.idx,Pl.idx,{names,width,font:'Figtree, sans-serif',perRow:Pl.perRow});
+    }
+  }
   $('hearBtn').onclick=()=>hearTune(tune);
   if($('clickBtn')) $('clickBtn').onclick=()=>{ Pl.clickOn=!Pl.clickOn; $('clickBtn').setAttribute('aria-pressed',String(Pl.clickOn)); $('clickBtn').textContent=Pl.clickOn?'Click on':'Click off'; if(Pl.clickOn) startClick(tune); else stopClick(); };
   if(Pl.click && Pl.clickOn!==false){ Pl.clickOn=true; startClick(tune); }
@@ -195,7 +208,7 @@ function playPress(m){
   const want=e.notes.map(n=>n.m);
   if(want.includes(m)){
     Pl.got.add(m); mark(m,'good',240);
-    if(want.every(x=>Pl.got.has(x))){ Pl.got=new Set(); Pl.idx++; if(Pl.idx>=Pl.tune.ev.length) return passDone(); if(Pl.pass<3){ const box=view.querySelector('.staffbox'); if(box) box.innerHTML=tuneSVG(Pl.tune,Pl.idx,Pl.idx,{names:Pl.pass===1,width:Math.min(1000,Math.max(360,view.clientWidth-60)),font:'Figtree, sans-serif'}); } else { const p=view.querySelector('.center p:last-child'); if(p) p.textContent=`${Pl.idx} of ${Pl.tune.ev.length} notes played`; } cueNext(); }
+    if(want.every(x=>Pl.got.has(x))){ Pl.got=new Set(); Pl.idx++; if(Pl.idx>=Pl.tune.ev.length) return passDone(); if(Pl.pass<3){ const box=view.querySelector('.staffbox'); if(box) box.innerHTML=tuneSVG(Pl.tune,Pl.idx,Pl.idx,{names:Pl.pass===1,width:Math.min(1000,Math.max(360,view.clientWidth-60)),font:'Figtree, sans-serif',perRow:Pl.perRow}); } else { const p=view.querySelector('.center p:last-child'); if(p) p.textContent=`${Pl.idx} of ${Pl.tune.ev.length} notes played`; } cueNext(); }
     else say(`Now add ${want.filter(x=>!Pl.got.has(x)).map(fullName).join(' and ')} with the other hand.`,'neutral');
   } else {
     Pl.misses++; mark(m,'bad',380); wrongShake();

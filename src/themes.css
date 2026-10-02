@@ -143,6 +143,18 @@ body[data-skin="arcade"] .dots span, body[data-skin="primary"] .dots span{border
 .opts button.good{background:var(--good-w); border-color:var(--good-b)} .opts button.bad{background:var(--bad-w); border-color:var(--bad-b)} .opts button.glow{background:var(--glow-w); border-color:var(--glow-b)}
 .staffbox{width:100%}
 .staffbox svg{display:block; width:100%; height:auto}
+/* Fit mode: any view with the keyboard sizes itself to the window, so the sheet
+   and the keys share the screen without scrolling. The notation svg scales down
+   (preserveAspectRatio) to whatever height is left. */
+body.fit .app{height:100vh; height:100dvh; display:flex; flex-direction:column; padding-top:14px; padding-bottom:14px}
+body.fit #view{flex:1 1 auto; min-height:0; display:flex; flex-direction:column}
+body.fit #view>.card.stage{flex:1 1 auto; min-height:0; display:flex; flex-flow:column nowrap; align-items:center; justify-content:center}
+body.fit .staffbox{flex:1 1 auto; min-height:140px; display:flex; align-items:center; justify-content:center}
+body.fit .staffbox svg{width:100%; height:100%}
+body.fit #view .sheet{min-height:130px; overflow:auto}
+body.fit .keys{height:clamp(120px, 24vh, 240px)}
+body.fit .rulin{margin:10px 0; padding:10px 16px}
+body.fit .kbfoot{margin-top:8px}
 .stage .single svg{width:min(320px, 70vw)}
 .tunehead{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px; width:100%}
 .tunehead b{font-size:22px}
