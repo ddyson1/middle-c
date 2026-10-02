@@ -1,6 +1,6 @@
 [
   {"name": "Find C, then C D E", "tune": "hotcross", "range": [60, 72], "steps": [
-    {"t": "show", "title": "Two black keys, then three", "text": "The black keys come in groups of two and three, over and over. That pattern is how you find your way around.", "line": "Hi, I’m Rulin. Look at the keyboard. Can you spot the groups of two black keys? I’ll light them up.", "glow": [61, 63], "expr": "neutral"},
+    {"t": "show", "title": "Two black keys, then three", "text": "The black keys come in groups of two and three, over and over. That pattern is how you find your way around.", "line": "Hi, I’m Rulin. A piano looks like a wall of keys until you see the pattern. I’ve lit a group of two black keys. Spot the other groups and you’re never lost.", "glow": [61, 63], "expr": "neutral"},
     {"t": "show", "title": "C lives beside the group of two", "text": "C is the white key just to the left of each group of two black keys. Find it once and you can find every other note from it.", "line": "This is C. It’s always just left of the two black keys. Press it and listen.", "glow": [60], "labels": [60], "demo": [60]},
     {"t": "drill", "line": "Press C. Nothing else counts yet.", "items": [{"t": "find", "pc": 0}, {"t": "find", "pc": 0}, {"t": "find", "pc": 0}]},
     {"t": "show", "title": "D and E", "text": "D sits between the two black keys. E is the white key just to their right. C, D, E: three steps up.", "line": "Now D and E, the two keys to the right of C. Listen to how they climb.", "glow": [60, 62, 64], "labels": [60, 62, 64], "demo": [60, 62, 64]},

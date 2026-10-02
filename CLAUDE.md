@@ -23,7 +23,7 @@ Source is split into modules under `src/`:
 - Keyboard always at the bottom; Rulin's line always in the row directly above it. The stage above shows one thing.
 - Note names on keys are only shown while a note is being introduced. The Settings toggle affects Songbook and Studio only.
 - Clean light is the default theme. Arcade, Primary shapes, Color-coded keys and Chalkboard are optional skins; they change looks only, never rules.
-- Rulin's avatar: `RULIN_ART` has four slots (neutral, happy, think, playing). Empty for now; the avatar idea is parked. Never generate her face from a photo.
+- Rulin is text only: no avatar or placeholder circle in the UI. The avatar idea is parked (the old `RULIN_ART` slots are gone; `expr` args remain on say/rulinRow callers but render nothing). Never generate her face from a photo.
 
 ## Copy rules
 

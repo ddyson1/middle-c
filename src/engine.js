@@ -7,17 +7,14 @@ import { tuneSVG, staffSingle } from './notation.js';
 import { setRange, keysEl, keyEls, mark, unmarkAll, label } from './keyboard.js';
 import { studio, renderSheet, stopMetro } from './studio.js';
 
-// Drop approved artwork here: one URL or data URI per expression. Empty strings show the placeholder.
-const RULIN_ART = { neutral:'', happy:'', think:'', demo:'' };
-
 const doneCount=()=>Object.keys(P.done).filter(k=>P.done[k]).length;
 const nextLesson=()=>{ for(let i=1;i<=LESSONS.length;i++) if(!P.done[i]) return i; return null; };
 
 // ---------- rendering helpers ----------
 export const view=$('view');
-function avatarHTML(expr,lg){ const src=RULIN_ART[expr]||RULIN_ART.neutral; return `<div class="avatar${lg?' lg':''}" role="img" aria-label="Rulin">${src?`<img src="${src}" alt="">`:'R'}</div>`; }
-export function rulinRow(line, acts, expr){ return `<div class="rulin" id="rulin">${avatarHTML(expr||'neutral')}<p id="rulinLine">${line}</p><div class="acts" id="rulinActs">${acts||''}</div></div>`; }
-export function say(line, expr, acts){ const p=$('rulinLine'); if(p) p.innerHTML=line; const a=$('rulinActs'); if(a&&acts!=null) a.innerHTML=acts; if(expr){ const av=document.querySelector('#rulin .avatar'); if(av) av.outerHTML=avatarHTML(expr); } }
+// Rulin is text only. expr is kept on the callers for a possible future avatar, but nothing renders it.
+export function rulinRow(line, acts, expr){ return `<div class="rulin" id="rulin"><p id="rulinLine">${line}</p><div class="acts" id="rulinActs">${acts||''}</div></div>`; }
+export function say(line, expr, acts){ const p=$('rulinLine'); if(p) p.innerHTML=line; const a=$('rulinActs'); if(a&&acts!=null) a.innerHTML=acts; }
 export function setTop(sub, prog, actions){ $('instrument').hidden = ['home','settings','songbook'].includes(S.view); $('subtitle').textContent=sub||''; $('progress').hidden=!prog; if(prog){ $('progBar').style.width=(prog[0]*100/prog[1])+'%'; $('progText').textContent=`Step ${prog[0]} of ${prog[1]}`; } $('topActions').innerHTML=actions||''; }
 function skinSelect(){ return `<select id="skinSel" aria-label="Theme">${['clean:Clean light','arcade:Arcade','primary:Primary shapes','candy:Color-coded keys','chalk:Chalkboard'].map(o=>{const [v,l]=o.split(':'); return `<option value="${v}"${v===S.skin?' selected':''}>${l}</option>`;}).join('')}</select>`; }
 
@@ -37,7 +34,7 @@ export function home(){
   const rows=LESSONS.map((L,i)=>{ const n=i+1, done=!!P.done[n], isNext=n===nx, locked=!done&&!isNext;
     return `<li class="${isNext?'next':locked?'locked':''}"><span class="mark ${done?'done':isNext?'next':''}">${done?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':n}</span><span><span class="t">${L.name}</span><span class="s">${done?`Done. Unlocked: ${TUNES[L.tune].title}`:isNext?`Up next. Ends with ${TUNES[L.tune].title}`:`Ends with ${TUNES[L.tune].title}`}</span></span>${done?`<button class="btn ghost" data-redo="${n}" type="button" style="margin-left:auto">Redo</button>`:''}</li>`; }).join('');
   view.innerHTML=`
-  <div class="card hero">${avatarHTML('happy',true)}<div class="lead"><p>${greet}</p>${sub?`<p class="muted small" style="margin-top:8px;font-size:15px">${sub}</p>`:''}</div>${nx?`<button class="btn big" id="startBtn" type="button">${dc?'Continue with lesson '+nx:'Start lesson 1'}</button>`:''}</div>
+  <div class="card hero"><div class="lead"><p>${greet}</p>${sub?`<p class="muted small" style="margin-top:8px;font-size:15px">${sub}</p>`:''}</div>${nx?`<button class="btn big" id="startBtn" type="button">${dc?'Continue with lesson '+nx:'Start lesson 1'}</button>`:''}</div>
   <div class="cols">
     <section class="card path"><h2 style="margin:0 10px 8px">Your path</h2><ol>${rows}</ol></section>
     <div class="side">
@@ -227,7 +224,7 @@ function renderDone(st){
   view.innerHTML=`<div class="cols"><section class="card" style="flex:1 1 420px"><h1>Lesson ${S.lesson} done</h1><p style="margin:14px 0 0;font-size:18px">${L.name}, including ${TUNES[L.tune].title} all the way through.</p>
     <div class="summary"><div><span>Learned</span><b>${taught}</b></div><div><span>Review next time</span><b>${missedNames||'Nothing yet'}</b></div><div><span>Unlocked</span><b>${TUNES[L.tune].title}</b></div></div>
     <div class="grp" style="margin-top:26px"><button class="btn big" id="homeBtn2" type="button">Back home</button><button class="btn ghost" id="playAgain" type="button">Play ${TUNES[L.tune].title} again</button></div></section>
-    <section class="card" style="flex:1 1 300px"><div style="display:flex;gap:16px;align-items:center">${avatarHTML('happy')}<p style="margin:0;font-size:19px">${st.line}</p></div></section></div>`;
+    <section class="card" style="flex:1 1 300px"><p style="margin:0;font-size:19px">${st.line}</p></section></div>`;
   $('homeBtn2').onclick=home; $('playAgain').onclick=()=>playSong(L.tune);
 }
 // ---------- practice ----------

@@ -10,7 +10,7 @@ body{
   --white-key:#FFFFFF; --white-border:#DDE1E8; --black-key:#1D2230; --black-border:none;
   --key-bw:1px; --key-gap:4px; --wr:10px; --br:6px; --white-shadow:0 2px 0 #DDE1E8; --lab:#3C3428; --blab:#E5E1F0;
   --frame-bg:transparent; --frame-pad:0px; --felt:transparent; --felt-h:0px;
-  --good-w:#D6F0E0; --good-b:#1E7A45; --bad-w:#FFD9D4; --bad-b:#B42318; --glow-w:#FFE9A8; --glow-b:#9A6B12; --next-w:#D6E2FF; --next-b:#2F6BFF; --dot:#2F6BFF;
+  --good-w:#D6F0E0; --good-b:#1E7A45; --bad-w:#FFD9D4; --bad-b:#B42318; --glow-w:#FFE9A8; --glow-b:#F5B82E; --next-w:#D6E2FF; --next-b:#2F6BFF; --dot:#2F6BFF;
   --staff-ink:#14161C; --sheet-bg:#FFFFFF; --bad-text:#B42318; --good-text:#1E7A45; --band-op:0;
   color-scheme:light;
 }
@@ -118,9 +118,6 @@ body[data-skin="arcade"] .hero p{font-size:26px}
 .side .card span{display:block; font-size:15px; color:var(--muted)}
 
 .rulin{display:flex; flex-wrap:wrap; align-items:center; gap:14px 20px; background:var(--surface); border:var(--border); border-radius:var(--radius); box-shadow:var(--card-shadow); padding:14px 18px; margin:14px 0}
-.avatar{flex:none; width:56px; height:56px; border-radius:50%; border:2px dashed #B9C2D3; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px; color:var(--muted); overflow:hidden}
-.avatar img{width:100%; height:100%; object-fit:cover; display:block}
-.avatar.lg{width:88px; height:88px; font-size:30px}
 .rulin p{flex:1 1 300px; margin:0; font-size:19px; line-height:1.4}
 body[data-skin="arcade"] .rulin p{font-size:25px}
 .rulin .acts{display:flex; gap:8px; flex-wrap:wrap}
