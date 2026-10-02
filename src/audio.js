@@ -3,7 +3,8 @@
 // CC BY 3.0, inlined via src/samples.json; see tools/build-samples.mjs.
 import SAMPLES from './samples.json' with { type: 'json' };
 
-let ac, master, buffers=null;
+let ac, master, buffers=null, useSamples=true;
+export function setSampled(on){ useSamples=on; }
 export function audio(){
   if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; ac=new C();
     const comp=ac.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=4;
@@ -23,7 +24,7 @@ export function playNote(m,dur,when,vel){
   const c=audio(); if(!c) return; const t=when||c.currentTime; dur=dur||Math.max(.9,2.4-(m-48)*0.025);
   // vel 0..1 from MIDI; on-screen and computer-key presses omit it and play at full level
   const amp=vel==null?1:.2+.8*Math.max(0,Math.min(1,vel));
-  if(buffers){
+  if(buffers&&useSamples){
     let root=null; for(const k in buffers){ if(root===null||Math.abs(k-m)<Math.abs(root-m)) root=+k; }
     const src=c.createBufferSource(); src.buffer=buffers[root]; src.playbackRate.value=Math.pow(2,(m-root)/12);
     const g=c.createGain(); g.gain.setValueAtTime(.8*amp,t); g.gain.setValueAtTime(.8*amp,t+dur); g.gain.exponentialRampToValueAtTime(.0001,t+dur+.18);

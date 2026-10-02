@@ -2,7 +2,7 @@
 import { SHARP, FLAT, isBlack, fullName, shortName, rand, shuffle, sleep, $, NOTE_COLOR, midiOfD, store } from './utils.js';
 import { S, P, saveP } from './state.js';
 import { LESSONS, TUNES } from './data.js';
-import { audio, playNote, click } from './audio.js';
+import { audio, playNote, click, setSampled } from './audio.js';
 import { tuneSVG, staffSingle } from './notation.js';
 import { setRange, keysEl, keyEls, mark, unmarkAll, label } from './keyboard.js';
 import { studio, renderSheet, stopMetro } from './studio.js';
@@ -49,17 +49,20 @@ export function home(){
   $('settingsBtn').onclick=settings;
   setRange([60,72]); keysEl.classList.toggle('labels', S.names);
 }
+let sampledOn=true; // session-only A/B knob, not saved
 function settings(){
   S.view='settings'; setTop('Settings', null, `<button class="btn ghost" id="homeBtn" type="button">Home</button>`); $('homeBtn').onclick=home;
   view.innerHTML=`<div class="card settings">
     <label>Theme ${skinSelect()}</label>
     <label>Note names on keys in Songbook and Studio <input type="checkbox" id="namesChk"${S.names?' checked':''}></label>
+    <label>Sampled piano, uncheck to hear the old synth <input type="checkbox" id="sampChk"${sampledOn?' checked':''}></label>
     <label>Start the path over <button class="btn ghost" id="resetBtn" type="button">Reset progress</button></label>
     <p class="muted small" style="margin:0">Lessons never show note names on the keys after they have been taught, so the names have to stick on their own.</p>
     <p class="muted small" style="margin:0">Piano sound: Salamander Grand Piano by Alexander Holm, CC BY 3.0.</p>
   </div>`;
   $('skinSel').onchange=e=>setSkin(e.target.value);
   $('namesChk').onchange=e=>{ S.names=e.target.checked; store.set('names',S.names); keysEl.classList.toggle('labels',S.names); };
+  $('sampChk').onchange=e=>{ sampledOn=e.target.checked; setSampled(sampledOn); playNote(60,.9); };
   $('resetBtn').onclick=()=>{ if(confirm('Clear all lesson progress and review items?')){ P.done={}; P.misses={}; saveP(); home(); } };
 }
 export function setSkin(s){ S.skin=s; document.body.dataset.skin=s; store.set('skin',s); document.body.style.setProperty('--band-op', s==='candy'?1:0); if(S.view==='lesson'||S.view==='practice'||S.view==='song') renderStep(); if(S.view==='studio') renderSheet(); }
