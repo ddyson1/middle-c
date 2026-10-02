@@ -12,7 +12,7 @@ const read = f => readFileSync(join(root, f), 'utf8');
 
 // Fixed order = evaluation order. state.js must precede studio.js (module-scope
 // `const W = S.write`), utils.js precedes everything.
-const ORDER = ['utils.js','state.js','data.js','audio.js','notation.js','keyboard.js','engine.js','studio.js','main.js'];
+const ORDER = ['utils.js','state.js','data.js','audio.js','notation.js','keyboard.js','engine.js','studio.js','midi.js','main.js'];
 
 const inlinedJson = new Set();
 let js = '';

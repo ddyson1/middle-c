@@ -39,5 +39,5 @@ document.addEventListener('keydown',e=>{ if(e.metaKey||e.ctrlKey||e.altKey) retu
   if(key in KEYMAP){ e.preventDefault(); if(e.repeat) return; const m=lo+12*S.octaveShift+KEYMAP[key]; if(m>=lo&&m<=hi){ heldKeys[key]=m; press(m); } } });
 document.addEventListener('keyup',e=>{ const key=e.key.toLowerCase(); if(heldKeys[key]!=null){ release(heldKeys[key]); delete heldKeys[key]; } });
 
-export function press(m){ playNote(m); down(m,true); if(S.view==='lesson'||S.view==='practice'||S.view==='song') stepPress(m); else if(S.view==='studio') writePress(m); }
+export function press(m,vel){ playNote(m,null,null,vel); down(m,true); if(S.view==='lesson'||S.view==='practice'||S.view==='song') stepPress(m); else if(S.view==='studio') writePress(m); }
 export function release(m){ down(m,false); if(S.view==='studio') writeRelease(m); if(S.play) S.play.held.delete(m); }

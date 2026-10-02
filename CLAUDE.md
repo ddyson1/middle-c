@@ -6,7 +6,7 @@ A browser game that teaches piano basics through a single lesson path with a vir
 
 Source is split into modules under `src/`:
 - `src/lessons.json`, `src/tunes.json`: Rulin's scripts, drill lists, tunes. Data, so Rulin can edit lines without touching code. `src/data.js` expands them into runtime shapes (drill item keys, tune event positions; a drill step's `"shuffle": true` mixes its items once per page load).
-- `src/engine.js` (lesson flow, drills, play-a-tune, practice, songbook), `src/notation.js`, `src/audio.js`, `src/keyboard.js`, `src/studio.js`, plus `src/utils.js` (note math, helpers) and `src/state.js` (shared mutable state; kept dependency-light because studio.js reads `S` at module scope).
+- `src/engine.js` (lesson flow, drills, play-a-tune, practice, songbook), `src/notation.js`, `src/audio.js`, `src/keyboard.js`, `src/studio.js`, `src/midi.js` (Web MIDI in, with velocity), plus `src/utils.js` (note math, helpers) and `src/state.js` (shared mutable state; kept dependency-light because studio.js reads `S` at module scope).
 - `src/themes.css`, `src/page.html` (HTML shell).
 - `build.mjs` inlines everything into one self-contained `dist/index.html` (about 87 KB): the published artifact and any static host take that file. No runtime fetches, assets inlined. The bundler is a deliberate naive concatenator: single-line `import`/`export` forms only, unique top-level names across modules, module order fixed in `ORDER`.
 
@@ -32,7 +32,7 @@ No em dashes, no exclamation points, no emojis in any product copy. Sentence cas
 ## Roadmap
 
 1. Done: module split and build (above).
-2. Web MIDI input: detect a connected keyboard, use velocity, and start judging timing in lesson 3 once input latency is reliable.
+2. Web MIDI input: done for detection and velocity (`src/midi.js`: notes route through the same press/release path as the on-screen keys; a footer line names the connected device). Still open: judge timing in lesson 3 once input latency is reliable.
 3. Sampled piano (short compressed samples every few semitones, inlined) to replace the oscillator synth.
 4. Rulin reviews and edits `lessons.json`.
 5. Static hosting on a real domain; keep republishing the claude.ai artifact as the preview.
