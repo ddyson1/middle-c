@@ -8,7 +8,8 @@ Source is split into modules under `src/`:
 - `src/lessons.json`, `src/tunes.json`: Rulin's scripts, drill lists, tunes. Data, so Rulin can edit lines without touching code. `src/data.js` expands them into runtime shapes (drill item keys, tune event positions; a drill step's `"shuffle": true` mixes its items once per page load).
 - `src/engine.js` (lesson flow, drills, play-a-tune, practice, songbook), `src/notation.js`, `src/audio.js`, `src/keyboard.js`, `src/studio.js`, `src/midi.js` (Web MIDI in, with velocity), plus `src/utils.js` (note math, helpers) and `src/state.js` (shared mutable state; kept dependency-light because studio.js reads `S` at module scope).
 - `src/themes.css`, `src/page.html` (HTML shell).
-- `build.mjs` inlines everything into one self-contained `dist/index.html` (about 87 KB): the published artifact and any static host take that file. No runtime fetches, assets inlined. The bundler is a deliberate naive concatenator: single-line `import`/`export` forms only, unique top-level names across modules, module order fixed in `ORDER`.
+- `src/samples.json`: 13 piano samples (C3 to C6, every minor third, 3 s mono mp3 as base64), from the Salamander Grand Piano by Alexander Holm, CC BY 3.0; regenerate with `tools/build-samples.mjs` (needs ffmpeg). `src/audio.js` plays the nearest sample pitch-shifted at most one semitone, with the old oscillator synth as fallback until the samples decode. Attribution shows in Settings.
+- `build.mjs` inlines everything into one self-contained `dist/index.html` (about 400 KB, mostly samples): the published artifact and any static host take that file. No runtime fetches, assets inlined. The bundler is a deliberate naive concatenator: single-line `import`/`export` forms only, unique top-level names across modules, module order fixed in `ORDER`.
 
 `src/glyphs.json` holds the music glyph outlines (clefs, accidentals, rests) extracted from Noto Music (OFL) so notation renders without a web font and exports as an image.
 
@@ -33,7 +34,7 @@ No em dashes, no exclamation points, no emojis in any product copy. Sentence cas
 
 1. Done: module split and build (above).
 2. Web MIDI input: done for detection and velocity (`src/midi.js`: notes route through the same press/release path as the on-screen keys; a footer line names the connected device). Still open: judge timing in lesson 3 once input latency is reliable.
-3. Sampled piano (short compressed samples every few semitones, inlined) to replace the oscillator synth.
+3. Done: sampled piano (see Current state). The synth remains only as a decode fallback.
 4. Rulin reviews and edits `lessons.json`.
 5. Static hosting on a real domain; keep republishing the claude.ai artifact as the preview.
 

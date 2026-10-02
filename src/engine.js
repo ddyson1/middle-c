@@ -56,6 +56,7 @@ function settings(){
     <label>Note names on keys in Songbook and Studio <input type="checkbox" id="namesChk"${S.names?' checked':''}></label>
     <label>Start the path over <button class="btn ghost" id="resetBtn" type="button">Reset progress</button></label>
     <p class="muted small" style="margin:0">Lessons never show note names on the keys after they have been taught, so the names have to stick on their own.</p>
+    <p class="muted small" style="margin:0">Piano sound: Salamander Grand Piano by Alexander Holm, CC BY 3.0.</p>
   </div>`;
   $('skinSel').onchange=e=>setSkin(e.target.value);
   $('namesChk').onchange=e=>{ S.names=e.target.checked; store.set('names',S.names); keysEl.classList.toggle('labels',S.names); };

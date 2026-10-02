@@ -75,13 +75,15 @@ const misc = await page.evaluate(async () => {
   M.studio(); M.press(60); M.release(60); await sleep(80); M.press(66); M.release(66);
   const notes = S.write.notes.length;
   await sleep(80); M.midiMessage({ data: new Uint8Array([0x90, 64, 90]) }); M.midiMessage({ data: new Uint8Array([0x80, 64, 0]) });
-  return { practice, songs, songLine, notes, midiNotes: S.write.notes.length, svg: !!document.getElementById('sheetSvg') };
+  for (let i = 0; i < 100 && M.samplesLoaded() < 13; i++) await sleep(100);
+  return { practice, songs, songLine, notes, midiNotes: S.write.notes.length, svg: !!document.getElementById('sheetSvg'), samples: M.samplesLoaded() };
 });
 check(misc.practice >= 4, 'practice should assemble items');
 check(misc.songs === 7, `songbook should list 7 tunes, got ${misc.songs}`);
 check(misc.songLine.includes('E4'), 'song wrong press should name the boxed note');
 check(misc.notes === 2 && misc.svg, 'studio should record notes and render the sheet');
 check(misc.midiNotes === 3, 'a MIDI note on/off pair should write a note like a key press');
+check(misc.samples === 13, `all 13 piano samples should decode, got ${misc.samples}`);
 
 await browser.close();
 check(errors.length === 0, 'console errors: ' + errors.join(' | '));
