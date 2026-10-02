@@ -4,17 +4,15 @@ A browser game that teaches piano basics through a single lesson path with a vir
 
 ## Current state
 
-Everything lives in `index.html`: engine, lesson data, tunes, notation renderer, audio synth, five visual themes, and the keyboard. It is a complete working build (about 87 KB). `src/glyphs.json` holds the music glyph outlines (clefs, accidentals, rests) extracted from Noto Music (OFL) so notation renders without a web font and exports as an image.
+Source is split into modules under `src/`:
+- `src/lessons.json`, `src/tunes.json`: Rulin's scripts, drill lists, tunes. Data, so Rulin can edit lines without touching code. `src/data.js` expands them into runtime shapes (drill item keys, tune event positions; a drill step's `"shuffle": true` mixes its items once per page load).
+- `src/engine.js` (lesson flow, drills, play-a-tune, practice, songbook), `src/notation.js`, `src/audio.js`, `src/keyboard.js`, `src/studio.js`, plus `src/utils.js` (note math, helpers) and `src/state.js` (shared mutable state; kept dependency-light because studio.js reads `S` at module scope).
+- `src/themes.css`, `src/page.html` (HTML shell).
+- `build.mjs` inlines everything into one self-contained `dist/index.html` (about 87 KB): the published artifact and any static host take that file. No runtime fetches, assets inlined. The bundler is a deliberate naive concatenator: single-line `import`/`export` forms only, unique top-level names across modules, module order fixed in `ORDER`.
 
-`tests/run.mjs` drives the whole app in headless Chromium: plays all seven lessons as a correct student, exercises the wrong-answer flow, Practice, Songbook and Studio, and fails on any console error. Run it after every change.
+`src/glyphs.json` holds the music glyph outlines (clefs, accidentals, rests) extracted from Noto Music (OFL) so notation renders without a web font and exports as an image.
 
-## First job in this repo
-
-Split `index.html` into modules without changing behavior, keeping the tests green:
-- `src/lessons.json`, `src/tunes.json`: Rulin's scripts, drill lists, tunes. Data, so Rulin can edit lines without touching code.
-- `src/engine.js` (lesson flow, drills, play-a-tune, practice, songbook), `src/notation.js`, `src/audio.js`, `src/keyboard.js`, `src/studio.js`.
-- `src/themes.css`.
-- A build step (Vite or a small script) that inlines everything into one self-contained `dist/index.html`. The published artifact and any static host take that file. The page must stay self-contained: no runtime fetches, assets inlined.
+`tests/run.mjs` drives the built `dist/index.html` in headless Chromium: plays all seven lessons as a correct student, exercises the wrong-answer flow, Practice, Songbook and Studio, and fails on any console error. `npm test` builds first; run it after every change.
 
 ## Product decisions (do not relitigate without reason)
 
@@ -33,7 +31,7 @@ No em dashes, no exclamation points, no emojis in any product copy. Sentence cas
 
 ## Roadmap
 
-1. Module split and build (above).
+1. Done: module split and build (above).
 2. Web MIDI input: detect a connected keyboard, use velocity, and start judging timing in lesson 3 once input latency is reliable.
 3. Sampled piano (short compressed samples every few semitones, inlined) to replace the oscillator synth.
 4. Rulin reviews and edits `lessons.json`.

@@ -4,7 +4,7 @@ import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', process.env.MC_FILE || 'index.html');
+const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', process.env.MC_FILE || 'dist/index.html');
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
 const page = await browser.newPage({ viewport: { width: 1200, height: 950 } });
 const errors = [];
