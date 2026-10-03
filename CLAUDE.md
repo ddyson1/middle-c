@@ -13,7 +13,7 @@ Source is split into modules under `src/`:
 
 `src/glyphs.json` holds the music glyph outlines (clefs, accidentals, rests) extracted from Noto Music (OFL) so notation renders without a web font and exports as an image.
 
-`tests/run.mjs` drives the built `dist/index.html` in headless Chromium: plays all seven lessons as a correct student, exercises the wrong-answer flow, Practice, Songbook and Studio, and fails on any console error. `npm test` builds first; run it after every change.
+`tests/run.mjs` drives the built `dist/index.html` in headless Chromium: plays all seven lessons as a correct student, exercises the wrong-answer flow, Practice, Songbook and Studio, and fails on any console error. `npm test` first audits the lesson and tune data (`tools/check-tunes.mjs`: bar math, note tokens, ranges, fingering consistency), then builds, then runs the browser suite; run it after every change.
 
 ## Product decisions (do not relitigate without reason)
 
@@ -21,14 +21,17 @@ Source is split into modules under `src/`:
 - Lessons: 1 Find C then C D E (Hot Cross Buns); 2 F G A B (Ode to Joy); 3 Playing in time (Twinkle); 4 Treble staff (Mary Had a Little Lamb from notation); 5 Sharps and flats (Happy Birthday, B flat); 6 Bass clef, left hand (Hot Cross Buns an octave down); 7 Both hands (Ode to Joy with left-hand downbeats). All tunes public domain.
 - Mistakes are corrected by doing: the right key glows until pressed, the item repeats later in the drill, and the note goes on a review list that Practice draws from first. No negative scoring, no timers in lessons.
 - Every tune is played three passes: lights and names, notation only, from memory.
-- Keyboard always at the bottom; Rulin's line always in the row directly above it. The stage above shows one thing.
+- Keyboard always at the bottom; the instruction line always in the row directly above it. The stage above shows one thing.
+- One theme: warm paper light with a matching dark mode. The five-skin system was removed on 2026-10-02 at Devin's request; do not add skins.
+- The interface is one calm column per screen: no grids of boxed cards (Devin: "no bento"), hairline dividers over borders, and as few visible buttons as each moment needs.
 - Note names on keys are only shown while a note is being introduced. The Settings toggle affects Songbook and Studio only.
-- Clean light is the default theme. Arcade, Primary shapes, Color-coded keys and Chalkboard are optional skins; they change looks only, never rules.
-- Rulin is text only: no avatar or placeholder circle in the UI. The avatar idea is parked (the old `RULIN_ART` slots are gone; `expr` args remain on say/rulinRow callers but render nothing). Never generate her face from a photo.
+- Key colors are a learning aid, not a skin: each letter name keeps a fixed color band (NOTE_COLOR), shown in lessons 1 to 3 and in Practice until lesson 4 is done; Songbook and Studio follow a Settings toggle. Like note names, colors fade out once staff reading starts.
+- Finger numbers: lesson 1 teaches thumb 1 to pinky 5 with the right hand resting on C to G; lesson 6 shows the left-hand mirror. During pass 1 of a tune the cued key wears a badge with its finger. Fingerings live in `tunes.json` as `E4:3` tokens; the C-position tunes are drafted, twinkle and birthday are left for Rulin because they shift hand position.
+- Rulin's persona is parked (2026-10-02): instruction copy is plain and neutral, her name appears nowhere in the UI for now, and there is no avatar. `lessons.json` keeps the `line` fields as the voice channel for when it returns. Never generate her face from a photo.
 
 ## Copy rules
 
-No em dashes, no exclamation points, no emojis in any product copy. Sentence case. Rulin's lines are short, specific, and never cheer every press. Placeholders use curly braces, like {name}.
+No em dashes, no exclamation points, no emojis in any product copy. Sentence case. Instruction lines are short, specific, and never cheer every press. Placeholders use curly braces, like {name}.
 
 ## Roadmap
 

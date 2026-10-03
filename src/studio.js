@@ -17,7 +17,7 @@ export function studio(){
     <div class="grp"><div class="tempo" id="tempoGrp" hidden><span class="beats" id="beats" aria-hidden="true"><i></i><i></i><i></i><i></i></span><button class="iconbtn" id="tDown" type="button" aria-label="Slower">-</button><span id="tempoVal">${W.tempo} bpm</span><button class="iconbtn" id="tUp" type="button" aria-label="Faster">+</button><button class="btn" id="metroBtn" type="button">Start metronome</button></div>
     <div class="seg" role="group" aria-label="Notation"><button type="button" data-wmode="notes" aria-pressed="${W.mode==='notes'}">Notes only</button><button type="button" data-wmode="rhythm" aria-pressed="${W.mode==='rhythm'}">With rhythm</button></div></div></div>
     <div class="sheet" id="sheetWrap"><div id="sheet"></div></div>
-    ${rulinRow('Play anything and I’ll write it down. Notes from middle C up go on the top staff, lower ones on the bottom.','','neutral')}`;
+    ${rulinRow('Play anything and it gets written down. Notes from middle C up go on the top staff, lower ones on the bottom.','','neutral')}`;
   setRange(window.innerWidth<700?[60,84]:[48,84]); keysEl.classList.toggle('labels', S.names);
   $('tempoGrp').hidden=W.mode!=='rhythm';
   $('metroBtn').onclick=()=>W.metro?stopMetro():startMetro();

@@ -3,7 +3,7 @@
 import { $, isBlack, fullName, SHARP, FLAT, NOTE_COLOR } from './utils.js';
 import { S } from './state.js';
 import { playNote } from './audio.js';
-import { stepPress } from './engine.js';
+import { stepPress, colorsOn } from './engine.js';
 import { writePress, writeRelease } from './studio.js';
 
 export let keyEls={};
@@ -15,16 +15,18 @@ export function buildKeys(){
   builtRange=lo+'-'+hi; keysEl.innerHTML=''; keyEls={};
   const whites=[]; for(let m=lo;m<=hi;m++) if(!isBlack(m%12)) whites.push(m); const n=whites.length;
   const mk=(m,cls)=>{ const b=document.createElement('button'); b.type='button'; b.className='key '+cls; b.dataset.midi=m; b.tabIndex=-1; b.setAttribute('aria-label', fullName(m)+(m===60?', middle C':'')); const pc=m%12;
-    b.innerHTML=(m===60?'<span class="dot"></span>':'')+`<span class="lab">${isBlack(pc)?`${SHARP[pc]}<br>${FLAT[pc]}`:SHARP[pc]}</span>`+(cls==='w'?`<span class="band" style="background:${NOTE_COLOR[pc]}"></span>`:''); keyEls[m]=b; return b; };
+    b.innerHTML=(m===60?'<span class="dot"></span>':'')+`<span class="lab">${isBlack(pc)?`${SHARP[pc]}<br>${FLAT[pc]}`:SHARP[pc]}</span>`+`<span class="fing"></span>`+(cls==='w'?`<span class="band" style="background:${NOTE_COLOR[pc]}"></span>`:''); keyEls[m]=b; return b; };
   whites.forEach((m,i)=>{ const b=mk(m,'w'); b.style.left=`calc(${i} * 100% / ${n} + var(--key-gap) / 2)`; b.style.width=`calc(100% / ${n} - var(--key-gap))`; keysEl.appendChild(b); });
   for(let m=lo;m<=hi;m++) if(isBlack(m%12)){ const i=whites.indexOf(m-1); const b=mk(m,'b'); b.style.left=`calc(${i+1} * 100% / ${n} - 100% / ${n} * 0.31)`; b.style.width=`calc(100% / ${n} * 0.62)`; keysEl.appendChild(b); }
   if(keyEls[lo]) keyEls[lo].tabIndex=0;
-  S.octaveShift=0; keysEl.classList.toggle('labels', S.names && S.view!=='lesson' && S.view!=='practice');
+  S.octaveShift=0; keysEl.classList.toggle('labels', S.names && S.view!=='lesson' && S.view!=='practice'); keysEl.classList.toggle('colors', colorsOn());
   $('mapnote').textContent=`Keys shown: ${fullName(lo)} to ${fullName(hi)}. The dot marks middle C.`;
 }
 export function mark(m,cls,ms){ const el=keyEls[m]; if(!el) return; el.classList.add(cls); if(ms) setTimeout(()=>el.classList.remove(cls),ms); }
 export function unmarkAll(cls){ Object.values(keyEls).forEach(el=>el.classList.remove(cls)); }
 export function label(ms,on){ ms.forEach(m=>{ const el=keyEls[m]; if(el) el.classList.toggle('labeled', on); }); }
+export function fing(m,f){ const el=keyEls[m]; if(el) el.querySelector('.fing').textContent=f; }
+export function clearFings(){ Object.values(keyEls).forEach(el=>{ el.querySelector('.fing').textContent=''; }); }
 function down(m,on){ const el=keyEls[m]; if(el) el.classList.toggle('down',on); }
 const activePointers={};
 keysEl.addEventListener('pointerdown',e=>{ const k=e.target.closest('.key'); if(!k) return; e.preventDefault(); const m=+k.dataset.midi; activePointers[e.pointerId]=m; press(m); });

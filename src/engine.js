@@ -4,8 +4,8 @@ import { S, P, saveP } from './state.js';
 import { LESSONS, TUNES } from './data.js';
 import { audio, playNote, click, setSampled } from './audio.js';
 import { tuneSVG, staffSingle } from './notation.js';
-import { setRange, keysEl, keyEls, mark, unmarkAll, label } from './keyboard.js';
-import { studio, renderSheet, stopMetro } from './studio.js';
+import { setRange, keysEl, keyEls, mark, unmarkAll, label, fing, clearFings } from './keyboard.js';
+import { studio, stopMetro } from './studio.js';
 
 const doneCount=()=>Object.keys(P.done).filter(k=>P.done[k]).length;
 const nextLesson=()=>{ for(let i=1;i<=LESSONS.length;i++) if(!P.done[i]) return i; return null; };
@@ -16,7 +16,14 @@ export const view=$('view');
 export function rulinRow(line, acts, expr){ return `<div class="rulin" id="rulin"><p id="rulinLine">${line}</p><div class="acts" id="rulinActs">${acts||''}</div></div>`; }
 export function say(line, expr, acts){ const p=$('rulinLine'); if(p) p.innerHTML=line; const a=$('rulinActs'); if(a&&acts!=null) a.innerHTML=acts; }
 export function setTop(sub, prog, actions){ const bare=['home','settings','songbook'].includes(S.view); $('instrument').hidden=bare; document.body.classList.toggle('fit', !bare); $('subtitle').textContent=sub||''; $('progress').hidden=!prog; if(prog){ $('progBar').style.width=(prog[0]*100/prog[1])+'%'; $('progText').textContent=`Step ${prog[0]} of ${prog[1]}`; } $('topActions').innerHTML=actions||''; }
-function skinSelect(){ return `<select id="skinSel" aria-label="Theme">${['clean:Clean light','arcade:Arcade','primary:Primary shapes','candy:Color-coded keys','chalk:Chalkboard'].map(o=>{const [v,l]=o.split(':'); return `<option value="${v}"${v===S.skin?' selected':''}>${l}</option>`;}).join('')}</select>`; }
+// key colors are a learning aid tied to the stage of the path: on through the
+// pre-notation lessons, off once staff reading starts, a Settings choice after
+export function colorsOn(){
+  if(S.view==='lesson') return S.lesson<=3;
+  if(S.view==='practice') return !P.done[4];
+  if(S.view==='song'||S.view==='studio') return S.colors;
+  return false;
+}
 
 // ---------- home ----------
 function dueCount(){ return Object.values(P.misses).filter(v=>v>0).length; }
@@ -26,7 +33,7 @@ export function home(){
   setTop('', null, `<button class="btn ghost" id="settingsBtn" type="button">Settings</button>`);
   const nx=nextLesson(), dc=doneCount();
   let greet;
-  if(dc===0) greet=`Hi, I’m Rulin. We’ll start by finding one key, C, and by the end of today you’ll play a tune with three notes. About five minutes.`;
+  if(dc===0) greet=`Piano, from the very first key. Find C today and finish with a tune that uses three notes. About five minutes.`;
   else if(nx) greet=`Welcome back. Today: ${LESSONS[nx-1].name}, ending with ${TUNES[LESSONS[nx-1].tune].title}. About five minutes.`;
   else greet=`You’ve finished the path. Keep the notes fresh in Practice, play through the Songbook, or try anything in the Studio.`;
   const due=dueCount();
@@ -34,15 +41,17 @@ export function home(){
   const rows=LESSONS.map((L,i)=>{ const n=i+1, done=!!P.done[n], isNext=n===nx, locked=!done&&!isNext;
     return `<li class="${isNext?'next':locked?'locked':''}"><span class="mark ${done?'done':isNext?'next':''}">${done?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':n}</span><span><span class="t">${L.name}</span><span class="s">${done?`Done. Unlocked: ${TUNES[L.tune].title}`:isNext?`Up next. Ends with ${TUNES[L.tune].title}`:`Ends with ${TUNES[L.tune].title}`}</span></span>${done?`<button class="btn ghost" data-redo="${n}" type="button" style="margin-left:auto">Redo</button>`:''}</li>`; }).join('');
   view.innerHTML=`
-  <div class="card hero"><div class="lead"><p>${greet}</p>${sub?`<p class="muted small" style="margin-top:8px;font-size:15px">${sub}</p>`:''}</div>${nx?`<button class="btn big" id="startBtn" type="button">${dc?'Continue with lesson '+nx:'Start lesson 1'}</button>`:''}</div>
-  <div class="cols">
-    <section class="card path"><h2 style="margin:0 10px 8px">Your path</h2><ol>${rows}</ol></section>
-    <div class="side">
-      <button class="card" id="practiceBtn" type="button"${dc?'':' disabled'}><b>Practice</b><span>${dc?(due?`${due} ${due===1?'note':'notes'} you missed, plus a quick mix of what you know. About two minutes.`:'A quick mix of everything so far. About two minutes.'):'Opens after your first lesson.'}</span></button>
-      <button class="card" id="songbookBtn" type="button"${dc?'':' disabled'}><b>Songbook</b><span>${dc?`${dc} ${dc===1?'tune':'tunes'} unlocked. Play with or without help.`:'Tunes you finish a lesson with land here.'}</span></button>
-      <button class="card" id="studioBtn" type="button"><b>Studio</b><span>Play anything and watch it written as sheet music.</span></button>
+  <section class="home">
+    <p class="greet">${greet}</p>
+    ${sub?`<p class="muted lead-sub">${sub}</p>`:''}
+    ${nx?`<button class="btn big" id="startBtn" type="button">${dc?'Continue with lesson '+nx:'Start lesson 1'}</button>`:''}
+    <ol class="path">${rows}</ol>
+    <div class="modes">
+      <button class="mode" id="practiceBtn" type="button"${dc?'':' disabled'}><b>Practice</b><span>${dc?(due?`${due} ${due===1?'note':'notes'} you missed, plus a quick mix of what you know. About two minutes.`:'A quick mix of everything so far. About two minutes.'):'Opens after your first lesson.'}</span></button>
+      <button class="mode" id="songbookBtn" type="button"${dc?'':' disabled'}><b>Songbook</b><span>${dc?`${dc} ${dc===1?'tune':'tunes'} unlocked. Play with or without help.`:'Tunes you finish a lesson with land here.'}</span></button>
+      <button class="mode" id="studioBtn" type="button"><b>Studio</b><span>Play anything and watch it written as sheet music.</span></button>
     </div>
-  </div>`;
+  </section>`;
   if(nx) $('startBtn').onclick=()=>startLesson(nx);
   view.querySelectorAll('[data-redo]').forEach(b=>b.onclick=()=>startLesson(+b.dataset.redo));
   $('practiceBtn').onclick=startPractice; $('songbookBtn').onclick=songbook; $('studioBtn').onclick=studio;
@@ -52,20 +61,19 @@ export function home(){
 let sampledOn=true; // session-only A/B knob, not saved
 function settings(){
   S.view='settings'; setTop('Settings', null, `<button class="btn ghost" id="homeBtn" type="button">Home</button>`); $('homeBtn').onclick=home;
-  view.innerHTML=`<div class="card settings">
-    <label>Theme ${skinSelect()}</label>
+  view.innerHTML=`<div class="settings">
     <label>Note names on keys in Songbook and Studio <input type="checkbox" id="namesChk"${S.names?' checked':''}></label>
+    <label>Key colors in Songbook and Studio <input type="checkbox" id="colorsChk"${S.colors?' checked':''}></label>
     <label>Sampled piano, uncheck to hear the old synth <input type="checkbox" id="sampChk"${sampledOn?' checked':''}></label>
     <label>Start the path over <button class="btn ghost" id="resetBtn" type="button">Reset progress</button></label>
-    <p class="muted small" style="margin:0">Lessons never show note names on the keys after they have been taught, so the names have to stick on their own.</p>
-    <p class="muted small" style="margin:0">Piano sound: Salamander Grand Piano by Alexander Holm, CC BY 3.0.</p>
+    <p class="muted small note">Lessons never show note names on the keys after they have been taught, so the names have to stick on their own. Key colors fade out the same way once you start reading the staff.</p>
+    <p class="muted small" style="margin:6px 0 0">Piano sound: Salamander Grand Piano by Alexander Holm, CC BY 3.0.</p>
   </div>`;
-  $('skinSel').onchange=e=>setSkin(e.target.value);
   $('namesChk').onchange=e=>{ S.names=e.target.checked; store.set('names',S.names); keysEl.classList.toggle('labels',S.names); };
+  $('colorsChk').onchange=e=>{ S.colors=e.target.checked; store.set('colors',S.colors); };
   $('sampChk').onchange=e=>{ sampledOn=e.target.checked; setSampled(sampledOn); playNote(60,.9); };
   $('resetBtn').onclick=()=>{ if(confirm('Clear all lesson progress and review items?')){ P.done={}; P.misses={}; saveP(); home(); } };
 }
-export function setSkin(s){ S.skin=s; document.body.dataset.skin=s; store.set('skin',s); document.body.style.setProperty('--band-op', s==='candy'?1:0); if(S.view==='lesson'||S.view==='practice'||S.view==='song') renderStep(); if(S.view==='studio') renderSheet(); }
 
 // ---------- lesson engine ----------
 export function startLesson(n){
@@ -76,7 +84,7 @@ export function startLesson(n){
 function exitBtn(){ return `<button class="btn ghost" id="exitBtn" type="button">Exit lesson</button>`; }
 function runStep(){
   const L=LESSONS[S.lesson-1]; S.step=L.steps[S.stepIdx]; S.token++; S.drill=null; S.play=null; S.locked=false;
-  unmarkAll('glow'); unmarkAll('next'); unmarkAll('labeled');
+  unmarkAll('glow'); unmarkAll('next'); unmarkAll('labeled'); clearFings();
   setTop(`Lesson ${S.lesson}: ${L.name}`, [S.stepIdx+1, L.steps.length], exitBtn()); $('exitBtn').onclick=home;
   renderStep();
 }
@@ -95,6 +103,7 @@ function renderShow(st){
   if(st.demoTune){ const t=TUNES[st.demoTune]; visual=`<div class="staffbox">${tuneSVG(t,0,-1,{names:true,width:Math.min(900,view.clientWidth-60),font:'Figtree, sans-serif'})}</div>`; }
   view.innerHTML=`<div class="card stage ${visual?'':''}"><div class="center"><h1>${st.title}</h1><p>${st.text}</p></div>${visual}</div>${rulinRow(st.line, `${(st.demo||st.demoRead||st.demoTune||st.demoClick)?'<button class="btn ghost" id="showMe" type="button">Show me</button>':''}<button class="btn" id="nextBtn" type="button">Got it, next</button>`, st.expr||'neutral')}`;
   (st.glow||[]).forEach(m=>mark(m,'glow')); label(st.labels||[], true);
+  Object.entries(st.fingers||{}).forEach(([m,f])=>fing(+m,f));
   const demo=async()=>{
     const tok=S.token; const c=audio(); if(!c) return;
     if(st.demoClick){ const t=c.currentTime+.1; for(let i=0;i<8;i++) click(t+i*.6, i%4===0); }
@@ -116,7 +125,7 @@ function renderDrill(){
   const dots=D.items.map((_,i)=>`<span class="${i<D.idx?'on':i===D.idx?'cur':''}"></span>`).join('');
   let stageHTML='';
   if(it.t==='find'){ const nmx = isBlack(it.pc) ? (it.useFlat?FLAT[it.pc]:SHARP[it.pc]) : SHARP[it.pc]; it.shown=nmx;
-    stageHTML=`<div class="bigprompt"><div class="bigletter${nmx.length>1?' two':''}" aria-hidden="true" style="${S.skin==='candy'&&!isBlack(it.pc)?'color:'+NOTE_COLOR[it.pc]:''}">${nmx}</div><div><p class="instr">Press ${nmx}</p><div class="dots" aria-label="Item ${D.idx+1} of ${D.items.length}">${dots}</div></div></div>`; }
+    stageHTML=`<div class="bigprompt"><div class="bigletter${nmx.length>1?' two':''}" aria-hidden="true" style="${colorsOn()&&!isBlack(it.pc)?'color:'+NOTE_COLOR[it.pc]:''}">${nmx}</div><div><p class="instr">Press ${nmx}</p><div class="dots" aria-label="Item ${D.idx+1} of ${D.items.length}">${dots}</div></div></div>`; }
   else if(it.t==='name'){ const pool=(S.lesson?LESSONS[S.lesson-1].steps.filter(s=>s.t==='drill').flatMap(s=>s.items):[]).filter(x=>x.t==='name').map(x=>x.m%12); const set=[...new Set([it.m%12,...pool,0,2,4,5,7,9,11])].filter(pc=>!isBlack(pc)); const opts=shuffle([it.m%12,...shuffle(set.filter(pc=>pc!==it.m%12)).slice(0,3)]); it.opts=opts;
     stageHTML=`<div><p class="instr">Which key is lit?</p><div class="opts" id="opts">${opts.map(pc=>`<button type="button" data-pc="${pc}">${SHARP[pc]}</button>`).join('')}</div><div class="dots">${dots}</div></div>`; }
   else if(it.t==='read'){ stageHTML=`<div class="bigprompt"><div class="single">${staffSingle(it.clef,it.d,it.acc)}</div><div><p class="instr">Which key is this?</p><p class="muted" style="margin:6px 0 0">Octave counts.</p><div class="dots">${dots}</div></div></div>`; }
@@ -176,7 +185,7 @@ function renderPlay(){
   const pills=Array.from({length:Pl.passes},(_,i)=>`<span class="pill${i+1===Pl.pass?' on':''}">${passNames[i]||'Pass '+(i+1)}</span>`).join('');
   const width=Math.min(1000, Math.max(360, view.clientWidth-60));
   const staff = showStaff ? `<div class="staffbox">${tuneSVG(tune, Pl.idx, Pl.idx, {names, width, font:'Figtree, sans-serif'})}</div>` : `<div class="center"><p class="instr">${tune.title}, from memory</p><p>${Pl.idx} of ${tune.ev.length} notes played</p></div>`;
-  view.innerHTML=`<div class="card stage" id="stageCard" style="padding:20px 24px 14px"><div class="tunehead"><b>${tune.title}</b><div class="pills">${pills}</div></div>${staff}</div>${rulinRow(st.line, `<button class="btn ghost" id="hearBtn" type="button">Hear it first</button>${Pl.click?`<button class="btn ghost" id="clickBtn" type="button" aria-pressed="true">Click on</button>`:''}`,'neutral')}`;
+  view.innerHTML=`<div class="card stage" id="stageCard"><div class="tunehead"><b>${tune.title}</b><div class="pills">${pills}</div></div>${staff}</div>${rulinRow(st.line, `<button class="btn ghost" id="hearBtn" type="button">Hear it first</button>${Pl.click?`<button class="btn ghost" id="clickBtn" type="button" aria-pressed="true">Click on</button>`:''}`,'neutral')}`;
   // fit mode: once the flex layout has sized the staff box, pick the bars-per-row
   // that renders the biggest notes inside it and redraw at that density
   const box=view.querySelector('.staffbox');
@@ -199,9 +208,9 @@ let clickTimer=null;
 function startClick(tune){ const c=audio(); if(!c) return; stopClick(); const beat=.6; let t0=c.currentTime+.1, b=0; clickTimer=setInterval(()=>{ while(t0+b*beat < c.currentTime+.15){ click(t0+b*beat, b%tune.beats===0); b++; } },40); }
 function stopClick(){ clearInterval(clickTimer); clickTimer=null; }
 export function cueNext(){
-  const Pl=S.play; unmarkAll('next'); unmarkAll('labeled'); if(!Pl) return;
+  const Pl=S.play; unmarkAll('next'); unmarkAll('labeled'); clearFings(); if(!Pl) return;
   const e=Pl.tune.ev[Pl.idx]; if(!e) return;
-  if(Pl.pass===1){ e.notes.forEach(n=>{ mark(n.m,'next'); label([n.m],true); }); }
+  if(Pl.pass===1){ e.notes.forEach(n=>{ mark(n.m,'next'); label([n.m],true); if(n.f) fing(n.m,n.f); }); }
 }
 function playPress(m){
   const Pl=S.play; if(!Pl || Pl.finished) return; const e=Pl.tune.ev[Pl.idx]; if(!e) return;
@@ -220,8 +229,8 @@ function playPress(m){
   }
 }
 function passDone(){
-  const Pl=S.play; Pl.finished=true; stopClick(); unmarkAll('next'); unmarkAll('labeled');
-  if(Pl.pass<Pl.passes){ const nxt=Pl.pass+1; const msg = nxt===2 ? 'All the way through. Now the same tune with just the notation: the box shows where you are.' : 'Now from memory. No staff, no lights. I’ll help if you get stuck.';
+  const Pl=S.play; Pl.finished=true; stopClick(); unmarkAll('next'); unmarkAll('labeled'); clearFings();
+  if(Pl.pass<Pl.passes){ const nxt=Pl.pass+1; const msg = nxt===2 ? 'All the way through. Now the same tune with just the notation: the box shows where you are.' : 'Now from memory. No staff, no lights. Hints appear if you slip.';
     say(msg,'happy',`<button class="btn" id="nextPass" type="button">Pass ${nxt}</button><button class="btn ghost" id="againPass" type="button">Same pass again</button>`);
     $('nextPass').onclick=()=>{ Pl.pass=nxt; Pl.idx=0; Pl.finished=false; Pl.got=new Set(); renderPlay(); };
     $('againPass').onclick=()=>{ Pl.idx=0; Pl.finished=false; Pl.got=new Set(); renderPlay(); };
@@ -238,10 +247,10 @@ function renderDone(st){
   const missedNames=[...new Set(Object.keys(P.misses).filter(k=>P.misses[k]>0&&k.startsWith('find:')).map(k=>SHARP[+k.split(':')[1]]))].join(', ');
   const taught={1:'C, D, E',2:'F, G, A, B',3:'Quarter and half notes',4:'Treble staff, C to G',5:'Sharps and flats',6:'Bass staff',7:'Both hands'}[S.lesson];
   setTop(`Lesson ${S.lesson}: ${L.name}`, [L.steps.length,L.steps.length], exitBtn()); $('exitBtn').onclick=home;
-  view.innerHTML=`<div class="cols"><section class="card" style="flex:1 1 420px"><h1>Lesson ${S.lesson} done</h1><p style="margin:14px 0 0;font-size:18px">${L.name}, including ${TUNES[L.tune].title} all the way through.</p>
+  view.innerHTML=`<section class="home"><h1>Lesson ${S.lesson} done</h1><p style="margin:14px 0 0;font-size:18px">${L.name}, including ${TUNES[L.tune].title} all the way through.</p>
     <div class="summary"><div><span>Learned</span><b>${taught}</b></div><div><span>Review next time</span><b>${missedNames||'Nothing yet'}</b></div><div><span>Unlocked</span><b>${TUNES[L.tune].title}</b></div></div>
-    <div class="grp" style="margin-top:26px"><button class="btn big" id="homeBtn2" type="button">Back home</button><button class="btn ghost" id="playAgain" type="button">Play ${TUNES[L.tune].title} again</button></div></section>
-    <section class="card" style="flex:1 1 300px"><p style="margin:0;font-size:19px">${st.line}</p></section></div>`;
+    <p class="muted" style="margin:22px 0 0;font-size:17px;max-width:56ch">${st.line}</p>
+    <div class="grp" style="margin-top:26px"><button class="btn big" id="homeBtn2" type="button">Back home</button><button class="btn ghost" id="playAgain" type="button">Play ${TUNES[L.tune].title} again</button></div></section>`;
   $('homeBtn2').onclick=home; $('playAgain').onclick=()=>playSong(L.tune);
 }
 // ---------- practice ----------
@@ -264,7 +273,7 @@ function practiceDone(){ view.innerHTML=`<div class="card stage"><div class="cen
 export function songbook(){
   S.view='songbook'; S.play=null; S.token++; stopClick(); setTop('Songbook', null, `<button class="btn ghost" id="homeBtn" type="button">Home</button>`); $('homeBtn').onclick=home;
   const tunes=unlockedTunes();
-  view.innerHTML=`<div class="card"><div class="songs">${tunes.map(k=>`<div class="row"><div><b>${TUNES[k].title}</b><div class="muted small">${TUNES[k].twoHands?'Two hands':TUNES[k].lhOnly?'Left hand':'Right hand'}, ${Math.ceil(TUNES[k].total/(TUNES[k].beats*2))} bars</div></div><div class="grp"><button class="btn ghost" data-song="${k}" data-pass="1" type="button">With lights</button><button class="btn ghost" data-song="${k}" data-pass="2" type="button">Notation</button><button class="btn" data-song="${k}" data-pass="3" type="button">From memory</button></div></div>`).join('')||'<p class="muted">Finish a lesson to unlock its tune.</p>'}</div>`;
+  view.innerHTML=`<div class="songs">${tunes.map(k=>`<div class="row"><div><b>${TUNES[k].title}</b><div class="muted small">${TUNES[k].twoHands?'Two hands':TUNES[k].lhOnly?'Left hand':'Right hand'}, ${Math.ceil(TUNES[k].total/(TUNES[k].beats*2))} bars</div></div><div class="grp"><button class="btn ghost" data-song="${k}" data-pass="1" type="button">With lights</button><button class="btn ghost" data-song="${k}" data-pass="2" type="button">Notation</button><button class="btn" data-song="${k}" data-pass="3" type="button">From memory</button></div></div>`).join('')||'<p class="muted">Finish a lesson to unlock its tune.</p>'}</div>`;
   view.querySelectorAll('[data-song]').forEach(b=>b.onclick=()=>playSong(b.dataset.song,+b.dataset.pass));
   keysEl.classList.toggle('labels', S.names);
 }
