@@ -1,183 +1,187 @@
 :root{box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%}
 *,*::before,*::after{box-sizing:border-box}
-/* One theme: warm paper light, with a matching dark mode. No skins. */
+/* One theme: engraved, like a printed score. Score-white paper, near-black ink,
+   one marine accent. Controls are typography, not buttons; the only filled
+   shapes are the piano and the staff. Dark mode is a night rehearsal. */
 body{
-  --bg:#F6F4EF; --surface:#FFFFFF; --surface-2:#EFECE3; --ink:#211E18; --muted:#6F675A;
-  --line:#E4DFD3; --radius:16px; --radius-sm:10px;
-  --accent:#3B5BDB; --accent-ink:#FFFFFF; --soft:#EDF0FC; --track:#E4DFD3; --key-gap:4px;
-  --white-key:#FFFDF8; --white-border:#E0DACB; --black-key:#2A251D; --white-shadow:0 2px 0 #E0DACB;
-  --lab:#473E2E; --blab:#EDE8DC;
-  --good-w:#D9F0E1; --good-b:#1E7A45; --bad-w:#FFDAD4; --bad-b:#B42318; --glow-w:#FFE9A8; --glow-b:#F5B82E; --next-w:#DCE4FF; --next-b:#3B5BDB; --dot:#3B5BDB;
-  --staff-ink:#211E18; --sheet-bg:#FFFFFF; --bad-text:#B42318; --good-text:#1E7A45;
+  --bg:#FAFAF7; --surface:#FFFFFF; --surface-2:#F0F0EA; --ink:#1C1C1A; --muted:#6E6B63; --faint:#A3A299;
+  --line:#DDDDD4; --radius:14px; --radius-sm:9px;
+  --accent:#28558A; --accent-ink:#FFFFFF; --track:#DDDDD4; --key-gap:4px;
+  --white-key:#FFFEF9; --white-border:#DEDBD2; --black-key:#1E1C17; --white-shadow:0 2px 0 #DEDBD2;
+  --lab:#55524A; --blab:#EDEBE2;
+  --good-w:#D9EDE0; --good-b:#2F6B4F; --bad-w:#F6DDD8; --bad-b:#A93A2A; --glow-w:#F4E9BE; --glow-b:#D9B544; --next-w:#DCE6F2; --next-b:#28558A; --dot:#28558A;
+  --staff-ink:#1C1C1A; --sheet-bg:#FFFFFF; --bad-text:#A93A2A; --good-text:#2F6B4F;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]) body{
-    --bg:#1A1813; --ink:#EFECE4; --muted:#A59B89; --surface:#211E18; --surface-2:#2A261E; --soft:#242B40;
-    --line:#332E25; --track:#332E25; --accent:#8EA5F6; --accent-ink:#141824;
-    --staff-ink:#EFECE4; --sheet-bg:#211E18; --white-border:#8E8775; --white-shadow:0 2px 0 #8E8775;
-    --next-b:#8EA5F6; --dot:#8EA5F6; --bad-text:#FF8A7A; --good-text:#6FD49A; color-scheme:dark;
+    --bg:#1B1C1E; --ink:#ECECE6; --muted:#A4A49A; --faint:#75756D; --surface:#232426; --surface-2:#2C2D30;
+    --line:#37383B; --track:#37383B; --accent:#8AA8D6; --accent-ink:#13171E;
+    --staff-ink:#ECECE6; --sheet-bg:#232426; --white-border:#8F8D83; --white-shadow:0 2px 0 #8F8D83;
+    --next-b:#8AA8D6; --dot:#8AA8D6; --bad-text:#E39183; --good-text:#8CC6A5; color-scheme:dark;
   }
 }
 :root[data-theme="dark"] body{
-  --bg:#1A1813; --ink:#EFECE4; --muted:#A59B89; --surface:#211E18; --surface-2:#2A261E; --soft:#242B40;
-  --line:#332E25; --track:#332E25; --accent:#8EA5F6; --accent-ink:#141824;
-  --staff-ink:#EFECE4; --sheet-bg:#211E18; --white-border:#8E8775; --white-shadow:0 2px 0 #8E8775;
-  --next-b:#8EA5F6; --dot:#8EA5F6; --bad-text:#FF8A7A; --good-text:#6FD49A; color-scheme:dark;
+  --bg:#1B1C1E; --ink:#ECECE6; --muted:#A4A49A; --faint:#75756D; --surface:#232426; --surface-2:#2C2D30;
+  --line:#37383B; --track:#37383B; --accent:#8AA8D6; --accent-ink:#13171E;
+  --staff-ink:#ECECE6; --sheet-bg:#232426; --white-border:#8F8D83; --white-shadow:0 2px 0 #8F8D83;
+  --next-b:#8AA8D6; --dot:#8AA8D6; --bad-text:#E39183; --good-text:#8CC6A5; color-scheme:dark;
 }
-body{margin:0; min-height:100%; background:var(--bg); color:var(--ink); font-family:'Figtree', system-ui, sans-serif; font-size:17px; line-height:1.5}
-.app{max-width:960px; margin:0 auto; padding:22px 24px 40px}
-.top{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 18px; margin-bottom:12px}
-.top .btn{min-height:38px; padding:0 14px; font-size:14px}
-.top select{min-height:38px}
-.brandrow{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap}
-.brand{font-weight:800; font-size:24px; letter-spacing:-0.02em; line-height:1}
-.sub{color:var(--muted); font-weight:600; font-size:15px}
-.progress{flex:1 1 140px; display:flex; align-items:center; gap:12px; min-width:110px; max-width:230px}
-.progress .bar{flex:1; height:6px; border-radius:3px; background:var(--track); overflow:hidden}
-.progress .bar i{display:block; height:100%; background:var(--accent); transition:width .25s}
-.progress span{font-weight:600; font-size:14px; color:var(--muted); white-space:nowrap}
-.btn{font:inherit; font-weight:700; font-size:15px; min-height:44px; padding:0 18px; border-radius:22px; border:none; background:var(--accent); color:var(--accent-ink); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center}
-.btn.ghost{background:transparent; color:var(--ink); border:1.5px solid var(--line)}
-.btn.big{min-height:52px; padding:0 26px; font-size:17px; border-radius:26px}
-.btn:disabled{opacity:.5; cursor:not-allowed}
-.iconbtn{font:inherit; font-weight:700; width:44px; height:44px; border-radius:22px; border:1.5px solid var(--line); background:transparent; color:var(--ink); cursor:pointer; font-size:20px; line-height:1; display:inline-flex; align-items:center; justify-content:center}
-button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
-.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px 28px}
-.muted{color:var(--muted)} .small{font-size:14px}
-h1,h2{font-weight:800; letter-spacing:-0.02em; margin:0; line-height:1.12}
-h1{font-size:clamp(28px, 4vw, 38px)} h2{font-size:17px; letter-spacing:0; text-transform:none}
+body{margin:0; min-height:100%; background:var(--bg); color:var(--ink); font-family:'EB Garamond', Georgia, serif; font-size:18.5px; line-height:1.5}
+.app{max-width:980px; margin:0 auto; padding:24px 24px 40px}
+.top{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:10px 18px; margin-bottom:12px}
+.brandrow{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap}
+.brand{font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:27px; letter-spacing:.04em; line-height:1}
+.sub{color:var(--muted); font-variant:small-caps; letter-spacing:.14em; font-size:14.5px}
+.progress{display:flex; align-items:baseline; gap:12px}
+.progress .bar{display:none}
+.progress span{font-variant:small-caps; letter-spacing:.14em; font-size:14.5px; color:var(--muted); white-space:nowrap}
+/* controls are typography */
+.btn{font:inherit; font-variant:small-caps; letter-spacing:.14em; font-size:16.5px; min-height:40px; padding:0 4px; border:none; background:transparent; color:var(--accent); cursor:pointer; text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px; display:inline-flex; align-items:center; justify-content:center}
+.btn:hover{text-decoration-thickness:2px}
+.btn.ghost{color:var(--muted)}
+.btn.big{font-size:18px; min-height:46px}
+.btn:disabled{opacity:.45; cursor:not-allowed; text-decoration:none}
+.iconbtn{font:inherit; font-weight:500; width:38px; height:38px; border-radius:19px; border:1px solid var(--line); background:transparent; color:var(--ink); cursor:pointer; font-size:19px; line-height:1; display:inline-flex; align-items:center; justify-content:center}
+button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+.card{background:transparent; border:none; padding:0}
+.muted{color:var(--muted)} .small{font-size:15px}
+h1,h2{font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; letter-spacing:.01em; margin:0; line-height:1.12}
+h1{font-size:clamp(30px, 4vw, 42px)} h2{font-size:19px}
 
-/* home: one calm column, no boxes */
-.greet{font-size:clamp(21px, 2.8vw, 27px); font-weight:600; line-height:1.4; max-width:36ch; margin:26px 0 8px}
-.home .lead-sub{margin:0 0 18px; font-size:15px}
-.path{list-style:none; margin:34px 0 0; padding:0}
-.path li{display:flex; align-items:center; gap:16px; padding:13px 10px; border-bottom:1px solid var(--line)}
-.path li.next{background:var(--soft); border-radius:var(--radius-sm); border-bottom-color:transparent}
-.path li.locked .t{color:var(--muted)}
-.path .t{display:block; font-weight:700; font-size:17px; line-height:1.3}
-.path .s{display:block; font-size:14px; color:var(--muted)}
-.mark{flex:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; border:2px solid var(--track); color:var(--muted)}
-.mark.done{background:var(--good-b); border-color:var(--good-b); color:#fff}
-.mark.next{border-color:var(--accent); color:var(--ink)}
-.modes{display:flex; flex-wrap:wrap; gap:18px 44px; margin-top:34px}
-.mode{font:inherit; background:none; border:none; padding:0; text-align:left; cursor:pointer; color:var(--ink); max-width:260px}
-.mode b{display:block; font-size:17px; margin-bottom:2px}
-.mode span{display:block; font-size:14.5px; color:var(--muted); line-height:1.45}
-.mode:disabled{opacity:.45; cursor:default}
+/* home: a table of contents */
+.home{display:flex; flex-direction:column; align-items:center; text-align:center}
+.greet{font-style:italic; font-size:clamp(19px, 2.4vw, 22px); line-height:1.6; max-width:52ch; margin:26px 0 0}
+.home .lead-sub{margin:10px 0 0; font-size:15.5px; font-style:italic}
+.home>.btn.big{margin-top:16px}
+.path{list-style:none; margin:40px 0 0; padding:0; width:100%; max-width:620px; display:flex; flex-direction:column; gap:15px; text-align:left}
+.path li{display:flex; align-items:baseline}
+.path .num{width:40px; flex:none; font-variant:small-caps; letter-spacing:.08em; color:var(--faint)}
+.path li.next .num{color:var(--accent)}
+.path li.done .num{color:var(--good-text)}
+.path .t{font-weight:500}
+.path li.locked .t{color:var(--muted); font-weight:400}
+.path .lead{flex:1 1 auto; border-bottom:1px dotted var(--faint); opacity:.55; margin:0 12px 5px; min-width:24px}
+.path .tune{color:var(--muted); font-style:italic; white-space:nowrap}
+.path li.locked .tune{color:var(--faint)}
+.path .btn{font-size:13.5px; margin-left:12px; min-height:0}
+.modes{display:flex; flex-wrap:wrap; justify-content:center; gap:16px 44px; margin-top:44px}
+.mode{font:inherit; background:none; border:none; padding:0; text-align:center; cursor:pointer; color:var(--ink); max-width:240px}
+.mode b{display:block; font-weight:500; font-variant:small-caps; letter-spacing:.14em; font-size:16px; text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px; color:var(--accent)}
+.mode span{display:block; margin-top:4px; font-size:14.5px; color:var(--muted); font-style:italic; line-height:1.45}
+.mode:disabled{cursor:default}
+.mode:disabled b{color:var(--faint); text-decoration:none}
+.mode:disabled span{color:var(--faint)}
 
-/* Rulin: a quiet line above the keys, no box */
-.rulin{display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; padding:12px 2px 12px 16px; margin:12px 0; border-left:3px solid var(--accent)}
-.rulin p{flex:1 1 300px; margin:0; font-size:18.5px; line-height:1.45}
-.rulin .acts{display:flex; gap:8px; flex-wrap:wrap}
+/* the instruction line, centered like a tempo marking */
+.rulin{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:center; gap:8px 22px; padding:10px 2px; margin:10px 0; text-align:center}
+.rulin p{flex:0 1 auto; margin:0; font-size:19px; font-style:italic; line-height:1.5; max-width:66ch}
+.rulin .acts{display:flex; gap:18px; flex-wrap:wrap; align-items:baseline}
 
-/* the stage is part of the page, not a box: one surface, one focus */
-.card.stage{background:transparent; border:none; padding:12px 0}
 .stage{min-height:220px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:24px}
-.stage .center{text-align:center; max-width:60ch}
-.stage .center p{margin:12px 0 0; font-size:18px; line-height:1.55; color:var(--muted)}
-.bigprompt{display:flex; align-items:center; gap:28px; flex-wrap:wrap; justify-content:center}
-.bigletter{font-weight:800; letter-spacing:-0.04em; font-size:120px; line-height:.9}
+.card.stage{padding:12px 0}
+.stage .center{text-align:center; max-width:58ch}
+.stage .center p{margin:12px 0 0; font-size:18.5px; line-height:1.6; color:var(--muted)}
+.bigprompt{display:flex; align-items:center; gap:30px; flex-wrap:wrap; justify-content:center}
+.bigletter{font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:124px; line-height:.9}
 .bigletter.two{font-size:84px}
-.instr{margin:0; font-weight:600; font-size:21px; line-height:1.3}
-.dots{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
-.dots span{width:13px; height:13px; border-radius:50%; border:2px solid var(--track)}
-.dots span.on{background:var(--good-b); border-color:var(--good-b)} .dots span.cur{border-color:var(--ink)}
-.opts{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
-.opts button{font:inherit; font-weight:700; font-size:22px; min-width:64px; height:56px; padding:0 18px; border-radius:var(--radius-sm); border:1.5px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer}
-.opts button.good{background:var(--good-w); border-color:var(--good-b)} .opts button.bad{background:var(--bad-w); border-color:var(--bad-b)} .opts button.glow{background:var(--glow-w); border-color:var(--glow-b)}
+.instr{margin:0; font-weight:500; font-size:21px; line-height:1.3}
+.dots{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; justify-content:center}
+.dots span{width:11px; height:11px; border-radius:50%; border:1px solid var(--faint)}
+.dots span.on{background:var(--good-b); border-color:var(--good-b)} .dots span.cur{border-color:var(--ink); border-width:2px}
+.opts{display:flex; gap:28px; flex-wrap:wrap; margin-top:14px; justify-content:center}
+.opts button{font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:34px; min-width:44px; min-height:44px; padding:0 6px; border:none; background:transparent; color:var(--ink); cursor:pointer; border-bottom:1px solid var(--line)}
+.opts button.good{color:var(--good-text); border-bottom:2px solid var(--good-text)}
+.opts button.bad{color:var(--bad-text); border-bottom:2px solid var(--bad-text)}
+.opts button.glow{color:var(--accent); border-bottom:2px solid var(--accent)}
 .staffbox{width:100%}
 .staffbox svg{display:block; width:100%; height:auto}
 /* Fit mode: any view with the keyboard sizes itself to the window, so the sheet
-   and the keys share the screen without scrolling. The notation svg scales down
-   (preserveAspectRatio) to whatever height is left. */
+   and the keys share the screen without scrolling. */
 body.fit .app{height:100vh; height:100dvh; display:flex; flex-direction:column; padding-top:14px; padding-bottom:14px; overflow-y:auto}
 body.fit #view{flex:1 1 auto; min-height:0; display:flex; flex-direction:column}
 body.fit #view>.card.stage{flex:1 1 auto; min-height:0; display:flex; flex-flow:column nowrap; align-items:center; justify-content:safe center}
 body.fit .staffbox{flex:1 1 auto; min-height:120px; display:flex; align-items:center; justify-content:center}
-body.fit .rulin .btn{min-height:38px; padding:0 14px; font-size:14px}
-body.fit .staffbox svg{width:100%; height:100%}
-body.fit #view .sheet{min-height:130px; overflow:auto}
 body.fit .keys{height:clamp(120px, 24vh, 240px)}
-body.fit .rulin{margin:8px 0; padding-top:8px; padding-bottom:8px}
+body.fit .rulin{margin:6px 0; padding-top:6px; padding-bottom:6px}
 body.fit .kbfoot{margin-top:8px}
+body.fit #view .sheet{min-height:130px; overflow:auto}
 .stage .single svg{width:min(320px, 70vw)}
-.tunehead{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px; width:100%}
-.tunehead b{font-size:19px}
-.pills{display:flex; gap:5px; flex-wrap:wrap}
-.pill{display:inline-flex; align-items:center; height:26px; padding:0 10px; border-radius:13px; font-weight:600; font-size:12.5px; background:var(--surface-2); color:var(--muted)}
-.pill.on{background:var(--accent); color:var(--accent-ink)}
-.summary{display:flex; flex-wrap:wrap; gap:22px 40px; margin:22px 0 0}
-.summary div span{display:block; font-size:14px; color:var(--muted); font-weight:600}
-.summary div b{display:block; font-size:21px; margin-top:3px}
-.songs{display:flex; flex-direction:column}
-.songs .row{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; padding:16px 4px; border-bottom:1px solid var(--line)}
-.songs .row b{font-size:18px}
-.toolbar{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px}
-.grp{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
-.seg{display:inline-flex; gap:2px; padding:4px; background:var(--surface-2); border-radius:calc(var(--radius-sm) + 2px)}
-.seg button{font:inherit; font-weight:600; font-size:15px; height:40px; padding:0 14px; border:none; border-radius:var(--radius-sm); background:transparent; color:var(--muted); cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(33,30,24,0.14)}
+.tunehead{display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:6px; width:100%}
+.tunehead b{font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:34px; line-height:1.1}
+.pills{display:flex; gap:12px; flex-wrap:wrap; align-items:baseline; justify-content:center}
+.pill{display:inline-flex; align-items:baseline; font-variant:small-caps; letter-spacing:.14em; font-size:14px; color:var(--faint); background:transparent; padding:0 0 2px}
+.pill.on{color:var(--accent); border-bottom:1px solid var(--accent)}
+.summary{display:flex; flex-wrap:wrap; justify-content:center; gap:22px 48px; margin:24px 0 0}
+.summary div span{display:block; font-variant:small-caps; letter-spacing:.14em; font-size:13.5px; color:var(--muted)}
+.summary div b{display:block; font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:23px; margin-top:3px}
+.songs{display:flex; flex-direction:column; max-width:760px; margin:10px auto 0}
+.songs .row{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px 16px; padding:17px 4px; border-bottom:1px solid var(--line)}
+.songs .row b{font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:22px}
+.songs .row .btn{font-size:14px}
+.toolbar{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:12px}
+.grp{display:flex; flex-wrap:wrap; align-items:baseline; gap:16px}
+.seg{display:inline-flex; gap:18px; padding:0; background:transparent; border-radius:0}
+.seg button{font:inherit; font-variant:small-caps; letter-spacing:.14em; font-size:14.5px; height:auto; padding:0 0 2px; border:none; background:transparent; color:var(--faint); cursor:pointer}
+.seg button[aria-pressed="true"]{background:transparent; color:var(--accent); box-shadow:none; border-bottom:1px solid var(--accent)}
 .tempo{display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums}
 .beats{display:inline-flex; gap:6px; margin-right:4px}
-.beats i{width:12px; height:12px; border-radius:50%; background:var(--track)}
+.beats i{width:10px; height:10px; border-radius:50%; background:var(--track)}
 .beats i.on{background:var(--accent)}
 .sheet{background:var(--sheet-bg); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 6px; overflow-x:auto}
 .sheet svg{display:block; height:auto}
-select{font:inherit; font-size:15px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:8px 10px; min-height:40px}
-.settings{display:flex; flex-direction:column; gap:0; max-width:560px; margin-top:10px}
-.settings label{display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:600; padding:16px 2px; border-bottom:1px solid var(--line)}
-.settings input[type=checkbox]{width:20px; height:20px; accent-color:var(--accent)}
-.settings .note{margin:14px 0 0; }
+.settings{display:flex; flex-direction:column; gap:0; max-width:580px; margin:10px auto 0}
+.settings label{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 2px; border-bottom:1px solid var(--line)}
+.settings input[type=checkbox]{width:19px; height:19px; accent-color:var(--accent)}
+.settings .note{margin:16px 0 0; font-style:italic}
 
-.instrument{margin-top:14px}
+.instrument{margin-top:16px}
 .frame{background:transparent; border:none; padding:0}
 .keys{position:relative; height:clamp(170px, 24vw, 240px); user-select:none; -webkit-user-select:none; touch-action:none}
-/* the rail and slot shadow seat the keys in an instrument */
-.keys::after{content:''; position:absolute; left:-3px; right:-3px; top:-9px; height:10px; border-radius:3px; background:linear-gradient(#4A4134, #332C22); box-shadow:0 2px 3px rgba(33,30,24,.3); z-index:4; pointer-events:none}
-.keys::before{content:''; position:absolute; left:0; right:0; top:0; height:16px; background:linear-gradient(rgba(33,30,24,.22), rgba(33,30,24,0)); z-index:3; pointer-events:none}
+.keys::after{content:''; position:absolute; left:-3px; right:-3px; top:-9px; height:10px; border-radius:3px; background:linear-gradient(#45423A, #2F2C26); box-shadow:0 2px 3px rgba(28,28,26,.3); z-index:4; pointer-events:none}
+.keys::before{content:''; position:absolute; left:0; right:0; top:0; height:16px; background:linear-gradient(rgba(28,28,26,.22), rgba(28,28,26,0)); z-index:3; pointer-events:none}
 .key{position:absolute; top:0; margin:0; padding:0; font:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; -webkit-tap-highlight-color:transparent; overflow:hidden}
-.key.w{height:100%; background:linear-gradient(to bottom, #F2EDDF, var(--white-key) 14%, var(--white-key) 80%, #F2ECDE);
+.key.w{height:100%; background:linear-gradient(to bottom, #F0EEE6, var(--white-key) 14%, var(--white-key) 80%, #F0EEE4);
   border:1px solid var(--white-border); border-top:none; border-radius:0 0 9px 9px; z-index:1; padding-bottom:14px; transition:background-color .12s, transform .06s;
-  box-shadow:inset -2px 0 3px -2px rgba(33,30,24,.28), inset 2px 0 3px -2px rgba(33,30,24,.14), 0 3px 0 var(--white-border), 0 5px 6px rgba(33,30,24,.14)}
+  box-shadow:inset -2px 0 3px -2px rgba(28,28,26,.28), inset 2px 0 3px -2px rgba(28,28,26,.14), 0 3px 0 var(--white-border), 0 5px 6px rgba(28,28,26,.14)}
 .key.b{height:60%; border:none; border-radius:0 0 5px 5px; z-index:2; padding-bottom:8px; transition:background-color .12s, transform .06s;
-  background:linear-gradient(to bottom, #393227, #201B15 72%, #463E30 76%, #2E2820 93%, #1A1611);
-  box-shadow:-2px 2px 4px rgba(20,17,12,.3), 2px 2px 4px rgba(20,17,12,.3), 0 5px 7px rgba(20,17,12,.4)}
-.key.w.down{transform:translateY(2px); box-shadow:inset -2px 0 3px -2px rgba(33,30,24,.28), inset 0 3px 5px rgba(33,30,24,.12), 0 1px 0 var(--white-border); background:linear-gradient(to bottom, #ECE6D6, #F6F1E6)}
-.key.b.down{transform:translateY(2px); box-shadow:-1px 1px 2px rgba(20,17,12,.3), 1px 1px 2px rgba(20,17,12,.3), 0 2px 3px rgba(20,17,12,.35)}
+  background:linear-gradient(to bottom, #35322B, #1E1C17 72%, #444036 76%, #2B2822 93%, #191712);
+  box-shadow:-2px 2px 4px rgba(18,17,14,.3), 2px 2px 4px rgba(18,17,14,.3), 0 5px 7px rgba(18,17,14,.4)}
+.key.w.down{transform:translateY(2px); box-shadow:inset -2px 0 3px -2px rgba(28,28,26,.28), inset 0 3px 5px rgba(28,28,26,.12), 0 1px 0 var(--white-border); background:linear-gradient(to bottom, #E9E7DD, #F6F4EC)}
+.key.b.down{transform:translateY(2px); box-shadow:-1px 1px 2px rgba(18,17,14,.3), 1px 1px 2px rgba(18,17,14,.3), 0 2px 3px rgba(18,17,14,.35)}
 .key.w.good{background:var(--good-w)} .key.b.good{background:var(--good-b)}
 .key.w.bad{background:var(--bad-w)} .key.b.bad{background:var(--bad-b)}
 .key.w.glow{background:var(--glow-w)} .key.b.glow{background:var(--glow-b)}
 .key.w.next{background:var(--next-w)} .key.b.next{background:var(--next-b)}
 .key.w.lit{background:var(--next-w)} .key.b.lit{background:var(--next-b)}
-.key .lab{visibility:hidden; font-weight:700; font-size:clamp(12px, 1.5vw, 17px); line-height:1.05; color:var(--lab); pointer-events:none; text-align:center}
+.key .lab{visibility:hidden; font-weight:500; font-size:clamp(13px, 1.5vw, 17px); line-height:1.05; color:var(--lab); pointer-events:none; text-align:center}
 .key.b .lab{color:var(--blab); font-size:clamp(8px, 0.9vw, 11px)}
 .keys.labels .lab, .key.labeled .lab{visibility:visible}
 .key .dot{width:8px; height:8px; border-radius:50%; background:var(--dot); margin-bottom:8px; pointer-events:none}
 /* color-coded keys: a learning aid, shown by stage of the path, not a skin */
-.key .band{display:none; position:absolute; left:0; right:0; bottom:0; height:12px; pointer-events:none}
+.key .band{display:none; position:absolute; left:0; right:0; bottom:0; height:8px; opacity:.85; pointer-events:none}
 .keys.colors .key.w .band{display:block}
-/* finger number bubble, set while a note is cued */
-.key .fing{position:absolute; top:8px; left:50%; transform:translateX(-50%); min-width:23px; height:23px; padding:0 4px; border-radius:12px; background:var(--accent); color:var(--accent-ink); font-size:13.5px; font-weight:700; display:flex; align-items:center; justify-content:center; pointer-events:none}
+/* finger number: a small engraved ring, set while a note is cued */
+.key .fing{position:absolute; top:9px; left:50%; transform:translateX(-50%); min-width:25px; height:25px; padding:0 4px; border-radius:13px; border:1px solid var(--accent); color:var(--accent); background:var(--white-key); font-size:15px; font-weight:500; display:flex; align-items:center; justify-content:center; pointer-events:none}
 .key .fing:empty{display:none}
 .kbfoot{display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 20px; margin-top:10px}
-.kbhint{margin:0; font-size:13px; color:var(--muted); max-width:72ch}
-kbd{font-family:inherit; font-weight:700; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:4px; padding:0 5px}
-.mapnote{margin:0; font-size:13px; color:var(--muted)}
+.kbhint{margin:0; font-size:14px; color:var(--faint); max-width:72ch}
+kbd{font-family:inherit; font-weight:600; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:3px; padding:0 4px; font-size:13px}
+.mapnote{margin:0; font-size:14px; color:var(--faint); font-style:italic}
 [hidden]{display:none !important}
 @keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .card.wrong{animation:nudge .25s ease}
 @media (max-width:700px){
-  .app{padding:14px 12px 28px}
-  .card{padding:18px} .card.stage{padding:8px 0} .stage{min-height:140px} .keys{height:clamp(150px,34vw,200px)} .bigletter{font-size:92px} .bigletter.two{font-size:60px} .instr{font-size:19px}
-  .greet{font-size:19px} .rulin p{font-size:16.5px}
-  .progress span{display:none}
+  .app{padding:14px 14px 28px}
+  .card.stage{padding:8px 0} .stage{min-height:140px} .keys{height:clamp(150px,34vw,200px)} .bigletter{font-size:96px} .bigletter.two{font-size:62px} .instr{font-size:19px}
+  .greet{font-size:18px} .rulin p{font-size:17px}
+  .path .tune{display:none} .path .lead{display:none}
 }
 @media (pointer: coarse){ .kbhint{display:none} }
 @media (max-height:620px){
   body.fit .kbfoot{display:none} body.fit .keys{height:clamp(110px, 20vh, 160px)}
   body.fit .stage{min-height:0} body.fit .staffbox{min-height:100px}
-  body.fit .rulin{margin:4px 0; padding-top:4px; padding-bottom:4px} body.fit .rulin p{font-size:16px}
+  body.fit .rulin{margin:4px 0; padding-top:2px; padding-bottom:2px} body.fit .rulin p{font-size:16px}
 }
 @media (prefers-reduced-motion: reduce){ .card.wrong{animation:none} .key{transition:none} }

@@ -38,8 +38,9 @@ export function home(){
   else greet=`You’ve finished the path. Keep the notes fresh in Practice, play through the Songbook, or try anything in the Studio.`;
   const due=dueCount();
   const sub = dc>0 && nx ? `Last time: ${LESSONS[nx-2].name}.${due?` ${due} ${due===1?'note is':'notes are'} due for review.`:''}` : '';
-  const rows=LESSONS.map((L,i)=>{ const n=i+1, done=!!P.done[n], isNext=n===nx, locked=!done&&!isNext;
-    return `<li class="${isNext?'next':locked?'locked':''}"><span class="mark ${done?'done':isNext?'next':''}">${done?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':n}</span><span><span class="t">${L.name}</span><span class="s">${done?`Done. Unlocked: ${TUNES[L.tune].title}`:isNext?`Up next. Ends with ${TUNES[L.tune].title}`:`Ends with ${TUNES[L.tune].title}`}</span></span>${done?`<button class="btn ghost" data-redo="${n}" type="button" style="margin-left:auto">Redo</button>`:''}</li>`; }).join('');
+  const ROMAN=['I','II','III','IV','V','VI','VII'];
+  const rows=LESSONS.map((L,i)=>{ const n=i+1, done=!!P.done[n], isNext=n===nx;
+    return `<li class="${isNext?'next':done?'done':'locked'}"><span class="num">${ROMAN[i]||n}</span><span class="t">${L.name}</span><span class="lead"></span><span class="tune">${TUNES[L.tune].title}</span>${done?`<button class="btn ghost" data-redo="${n}" type="button">redo</button>`:''}</li>`; }).join('');
   view.innerHTML=`
   <section class="home">
     <p class="greet">${greet}</p>
