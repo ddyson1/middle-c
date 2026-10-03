@@ -13,7 +13,7 @@ function nowMs(){ const c=audio(); return c?c.currentTime*1000:performance.now()
 function eighthMs(){ return 30000/W.tempo; }
 export function studio(){
   S.view='studio'; S.token++; S.play=null; S.drill=null; setTop('Studio', null, `<button class="btn ghost" id="homeBtn" type="button">Home</button>`); $('homeBtn').onclick=home;
-  view.innerHTML=`<div class="toolbar"><div class="grp"><button class="btn" id="wPlay" type="button">Play back</button><button class="btn ghost" id="wUndo" type="button">Undo</button><button class="btn ghost" id="wClear" type="button">Clear</button><button class="btn ghost" id="wSave" type="button" hidden>Save image</button></div>
+  view.innerHTML=`<div class="toolbar"><div class="grp"><button class="btn" id="wPlay" type="button">Play back</button><button class="btn ghost" id="wUndo" type="button">Undo</button><button class="btn ghost" id="wClear" type="button">Clear</button><button class="btn ghost" id="wSave" type="button">Save image</button></div>
     <div class="grp"><div class="tempo" id="tempoGrp" hidden><span class="beats" id="beats" aria-hidden="true"><i></i><i></i><i></i><i></i></span><button class="iconbtn" id="tDown" type="button" aria-label="Slower">-</button><span id="tempoVal">${W.tempo} bpm</span><button class="iconbtn" id="tUp" type="button" aria-label="Faster">+</button><button class="btn" id="metroBtn" type="button">Start metronome</button></div>
     <div class="seg" role="group" aria-label="Notation"><button type="button" data-wmode="notes" aria-pressed="${W.mode==='notes'}">Notes only</button><button type="button" data-wmode="rhythm" aria-pressed="${W.mode==='rhythm'}">With rhythm</button></div></div></div>
     <div class="sheet" id="sheetWrap"><div id="sheet"></div></div>
@@ -27,7 +27,7 @@ export function studio(){
   $('wUndo').onclick=()=>{ (W.mode==='notes'?W.notes:W.rhythm).pop(); renderSheet(); };
   $('wClear').onclick=()=>{ if(W.metro) stopMetro(); if(W.mode==='notes') W.notes=[]; else W.rhythm=[]; renderSheet(); };
   $('wPlay').onclick=()=>{ const c=audio(); if(!c) return; const t=c.currentTime+.1; if(W.mode==='notes') W.notes.forEach((en,i)=>en.ms.forEach(m=>playNote(m,.9,t+i*.42))); else { const e8=eighthMs()/1000, list=W.rhythm; list.forEach((en,i)=>{ const next=list[i+1]?list[i+1].e:null; let end=en.endE!=null?en.endE:(next!=null?next:en.e+2); if(next!=null) end=Math.min(end,next); en.ms.forEach(m=>playNote(m,Math.max(.25,(end-en.e)*e8+.15),t+en.e*e8)); }); } };
-  $('wSave').hidden=!downloads; $('wSave').onclick=saveImage;
+  $('wSave').onclick=saveImage;
   renderSheet();
 }
 export function writePress(m){
@@ -59,8 +59,13 @@ let metroTimer=null, nextBeat=0;
 function startMetro(){ const c=audio(); if(!c) return; W.rhythm=[]; const beat=60/W.tempo; W.t0=(c.currentTime+.15+4*beat)*1000; W.metro=true; nextBeat=-4; $('metroBtn').textContent='Stop metronome'; $('tDown').disabled=$('tUp').disabled=true; say('Four clicks, then play. Notes snap to the nearest eighth note.','demo');
   clearInterval(metroTimer); metroTimer=setInterval(()=>{ const now=c.currentTime, b=60/W.tempo; while(W.t0/1000+nextBeat*b<now+.12){ const when=W.t0/1000+nextBeat*b; if(when>=now-.01) click(when,((nextBeat%4)+4)%4===0); nextBeat++; } const cur=Math.floor((now-W.t0/1000)/b); document.querySelectorAll('#beats i').forEach((el,i)=>el.classList.toggle('on',((cur%4)+4)%4===i)); },25); renderSheet(); }
 export function stopMetro(){ if(!W.metro) return; clearInterval(metroTimer); W.metro=false; Object.keys(W.held).forEach(m=>writeRelease(+m)); const b=$('metroBtn'); if(b){ b.textContent='Start metronome'; $('tDown').disabled=$('tUp').disabled=false; } document.querySelectorAll('#beats i').forEach(el=>el.classList.remove('on')); if(S.view==='studio') renderSheet(); }
+// Saving: inside the claude.ai artifact the downloads capability handles it;
+// anywhere else (the real site, a local file) a plain anchor download does.
 let downloads=null;
-if(window.claude&&typeof window.claude.use==='function'){ window.claude.use('downloads').then(d=>{ downloads=d; const b=$('wSave'); if(b) b.hidden=!d; }).catch(()=>{}); }
-async function saveImage(){ if(!downloads) return; const svgEl=$('sheetSvg'); if(!svgEl) return; const w=+svgEl.getAttribute('width'), h=230, scale=2; const bg=getComputedStyle($('sheetWrap')).backgroundColor; const xml=new XMLSerializer().serializeToString(svgEl); const img=new Image();
-  img.onload=()=>{ const cv=document.createElement('canvas'); cv.width=(w+40)*scale; cv.height=(h+20)*scale; const ctx=cv.getContext('2d'); ctx.fillStyle=(bg&&bg!=='rgba(0, 0, 0, 0)')?bg:'#ffffff'; ctx.fillRect(0,0,cv.width,cv.height); ctx.scale(scale,scale); ctx.drawImage(img,20,10,w,h); cv.toBlob(async blob=>{ try{ await downloads.save({filename:'middle-c-sheet.png',data:blob}); say('Saved.','happy'); }catch(err){ if(err&&err.code!=='declined') say('The image could not be saved here.','neutral'); } },'image/png'); };
+if(window.claude&&typeof window.claude.use==='function'){ window.claude.use('downloads').then(d=>{ downloads=d; }).catch(()=>{}); }
+async function saveImage(){ const svgEl=$('sheetSvg'); if(!svgEl) return; const w=+svgEl.getAttribute('width'), h=230, scale=2; const bg=getComputedStyle($('sheetWrap')).backgroundColor; const xml=new XMLSerializer().serializeToString(svgEl); const img=new Image();
+  img.onload=()=>{ const cv=document.createElement('canvas'); cv.width=(w+40)*scale; cv.height=(h+20)*scale; const ctx=cv.getContext('2d'); ctx.fillStyle=(bg&&bg!=='rgba(0, 0, 0, 0)')?bg:'#ffffff'; ctx.fillRect(0,0,cv.width,cv.height); ctx.scale(scale,scale); ctx.drawImage(img,20,10,w,h); cv.toBlob(async blob=>{
+    if(downloads){ try{ await downloads.save({filename:'middle-c-sheet.png',data:blob}); say('Saved.'); }catch(err){ if(err&&err.code!=='declined') say('The image could not be saved here.'); } return; }
+    const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='middle-c-sheet.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); say('Saved.');
+  },'image/png'); };
   img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml); }

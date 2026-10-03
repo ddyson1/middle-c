@@ -13,7 +13,7 @@ const nextLesson=()=>{ for(let i=1;i<=LESSONS.length;i++) if(!P.done[i]) return 
 // ---------- rendering helpers ----------
 export const view=$('view');
 // Rulin is text only. expr is kept on the callers for a possible future avatar, but nothing renders it.
-export function rulinRow(line, acts, expr){ return `<div class="rulin" id="rulin"><p id="rulinLine">${line}</p><div class="acts" id="rulinActs">${acts||''}</div></div>`; }
+export function rulinRow(line, acts, expr){ return `<div class="rulin" id="rulin"><p id="rulinLine" aria-live="polite">${line}</p><div class="acts" id="rulinActs">${acts||''}</div></div>`; }
 export function say(line, expr, acts){ const p=$('rulinLine'); if(p) p.innerHTML=line; const a=$('rulinActs'); if(a&&acts!=null) a.innerHTML=acts; }
 export function setTop(sub, prog, actions){ const bare=['home','settings','songbook'].includes(S.view); $('instrument').hidden=bare; document.body.classList.toggle('fit', !bare); $('subtitle').textContent=sub||''; $('progress').hidden=!prog; if(prog){ $('progBar').style.width=(prog[0]*100/prog[1])+'%'; $('progText').textContent=`Step ${prog[0]} of ${prog[1]}`; } $('topActions').innerHTML=actions||''; }
 // key colors are a learning aid tied to the stage of the path: on through the
