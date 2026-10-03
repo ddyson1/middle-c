@@ -1,7 +1,8 @@
 // Accuracy audit for the notation data: every event must fit inside its bar,
-// every note token must parse, stay inside the tune's keyboard range and keep
-// one consistent fingering per pitch, and totals must fill whole bars (a
-// pickup tune may end one truncated bar). Exits non-zero on any failure.
+// every note token must parse and stay inside the tune's keyboard range, and
+// totals must fill whole bars (a pickup tune may end one truncated bar).
+// Fingerings may differ per occurrence (hand positions shift), so only the
+// token format is checked. Exits non-zero on any failure.
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,7 +21,6 @@ for (const [k, t] of Object.entries(TUNES)) {
   if (k.startsWith('_')) continue;
   const barE = t.beats * 2;
   let pos = t.pickup ? barE - t.pickup : 0;
-  const fingerOf = {};
   for (const [i, [len, rh, lh]] of t.ev.entries()) {
     if ((pos % barE) + len > barE) bad.push(`${k} ev ${i}: crosses a barline (pos ${pos}, len ${len})`);
     for (const hand of [rh, lh]) {
@@ -29,7 +29,6 @@ for (const [k, t] of Object.entries(TUNES)) {
         const n = midiOf(tok);
         if (!n) { bad.push(`${k} ev ${i}: bad token ${tok}`); continue; }
         if (n.midi < t.range[0] || n.midi > t.range[1]) bad.push(`${k} ev ${i}: ${tok} outside range ${t.range}`);
-        if (n.f) { if (fingerOf[n.midi] && fingerOf[n.midi] !== n.f) bad.push(`${k} ev ${i}: ${tok} conflicts with finger ${fingerOf[n.midi]}`); fingerOf[n.midi] = n.f; }
       }
     }
     pos += len;

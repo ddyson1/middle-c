@@ -22,7 +22,10 @@ jobs:
         with:
           node-version: 22
       # build.mjs has no dependencies; skipping npm install avoids the
-      # playwright postinstall download
+      # playwright postinstall download. The data audit runs first so a bad
+      # lessons.json or tunes.json edit fails the deploy and the live site
+      # keeps the previous version.
+      - run: node tools/check-tunes.mjs
       - run: node build.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

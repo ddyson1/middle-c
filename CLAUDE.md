@@ -38,7 +38,7 @@ No em dashes, no exclamation points, no emojis in any product copy. Sentence cas
 1. Done: module split and build (above).
 2. Web MIDI input: done for detection and velocity (`src/midi.js`: notes route through the same press/release path as the on-screen keys; a footer line names the connected device). Still open: judge timing in lesson 3 once input latency is reliable.
 3. Done: sampled piano (see Current state). The synth remains only as a decode fallback.
-4. Rulin reviews and edits `lessons.json`.
+4. In progress: Rulin reviews and edits `lessons.json` and the fingerings in `tunes.json`. `LESSONS-GUIDE.md` is her plain-language guide; the deploy workflow runs the data audit first, so a bad edit fails the deploy and the live site keeps the previous version. Twinkle and Happy Birthday fingerings are deliberately hers to author.
 5. Hosted on GitHub Pages at https://devindyson.com/middle-c/ (`.github/workflows/pages.yml` builds and deploys on every push to main; the account's custom domain covers it). Keep republishing the claude.ai artifact as the preview.
 
 ## Known simplifications
