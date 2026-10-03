@@ -69,6 +69,13 @@ check(wrong.miss >= 1, 'miss should be recorded for review');
 const misc = await page.evaluate(async () => {
   const M = window.__mc, S = M.S, sleep = ms => new Promise(r => setTimeout(r, ms));
   M.home(); M.press(72, 0.5); M.release(72); // velocity path (MIDI) must not error
+  // computer-key guides: a keydown shows caps on the mapped keys, pointer play hides them
+  const kd = k => document.dispatchEvent(new KeyboardEvent('keydown', { key: k })), ku = k => document.dispatchEvent(new KeyboardEvent('keyup', { key: k }));
+  kd('a'); ku('a');
+  const keysEl = document.getElementById('keys');
+  const capOn = keysEl.classList.contains('kcaps'), capA = [...document.querySelectorAll('.key')].find(k => +k.dataset.midi === 60).querySelector('.kcap').textContent;
+  keysEl.querySelector('.key').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+  const capOff = !keysEl.classList.contains('kcaps');
   M.startPractice(); const practice = S.drill.items.length;
   M.songbook(); const songs = document.querySelectorAll('[data-song]').length / 3;
   M.playSong('ode', 2); M.press(64); M.release(64); M.press(60); const songLine = document.getElementById('rulinLine').innerText;
@@ -76,7 +83,7 @@ const misc = await page.evaluate(async () => {
   const notes = S.write.notes.length;
   await sleep(80); M.midiMessage({ data: new Uint8Array([0x90, 64, 90]) }); M.midiMessage({ data: new Uint8Array([0x80, 64, 0]) });
   for (let i = 0; i < 100 && M.samplesLoaded() < 13; i++) await sleep(100);
-  return { practice, songs, songLine, notes, midiNotes: S.write.notes.length, svg: !!document.getElementById('sheetSvg'), samples: M.samplesLoaded() };
+  return { practice, songs, songLine, notes, midiNotes: S.write.notes.length, svg: !!document.getElementById('sheetSvg'), samples: M.samplesLoaded(), capOn, capA, capOff };
 });
 check(misc.practice >= 4, 'practice should assemble items');
 check(misc.songs === 7, `songbook should list 7 tunes, got ${misc.songs}`);
@@ -84,6 +91,7 @@ check(misc.songLine.includes('E4'), 'song wrong press should name the boxed note
 check(misc.notes === 2 && misc.svg, 'studio should record notes and render the sheet');
 check(misc.midiNotes === 3, 'a MIDI note on/off pair should write a note like a key press');
 check(misc.samples === 13, `all 13 piano samples should decode, got ${misc.samples}`);
+check(misc.capOn && misc.capA === 'A' && misc.capOff, `computer-key guides should follow input mode, got ${JSON.stringify([misc.capOn, misc.capA, misc.capOff])}`);
 
 await browser.close();
 check(errors.length === 0, 'console errors: ' + errors.join(' | '));

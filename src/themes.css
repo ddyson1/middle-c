@@ -165,6 +165,11 @@ body.fit #view .sheet{min-height:130px; overflow:auto}
 /* finger number: a small engraved ring, set while a note is cued */
 .key .fing{position:absolute; top:9px; left:50%; transform:translateX(-50%); min-width:25px; height:25px; padding:0 4px; border-radius:13px; border:1px solid var(--accent); color:var(--accent); background:var(--white-key); font-size:15px; font-weight:500; display:flex; align-items:center; justify-content:center; pointer-events:none}
 .key .fing:empty{display:none}
+/* computer-key guides: shown while playing from the computer keyboard */
+.key .kcap{display:none; position:absolute; left:50%; transform:translateX(-50%); bottom:40px; min-width:21px; height:21px; padding:0 4px; border:1px solid var(--line); border-radius:5px; background:var(--white-key); color:var(--muted); font-size:12.5px; font-weight:500; align-items:center; justify-content:center; pointer-events:none}
+.key.b .kcap{bottom:12px; background:transparent; border-color:#56534A; color:var(--blab)}
+.keys.kcaps .kcap{display:flex}
+.key .kcap:empty{display:none !important}
 .kbfoot{display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 20px; margin-top:10px}
 .kbhint{margin:0; font-size:14px; color:var(--faint); max-width:72ch}
 kbd{font-family:inherit; font-weight:600; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:3px; padding:0 4px; font-size:13px}

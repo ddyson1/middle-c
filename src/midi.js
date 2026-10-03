@@ -2,11 +2,11 @@
 // keys, with velocity. Notes outside the shown range still sound and still count
 // in drills. No timing judgment yet (roadmap: lesson 3, once latency is reliable).
 import { $ } from './utils.js';
-import { press, release } from './keyboard.js';
+import { press, release, keycapMode } from './keyboard.js';
 
 export function midiMessage(e){
   const d=e.data; if(!d||d.length<3) return; const cmd=d[0]&0xF0, m=d[1], vel=d[2];
-  if(cmd===0x90&&vel>0) press(m, vel/127);
+  if(cmd===0x90&&vel>0){ keycapMode(false); press(m, vel/127); }
   else if(cmd===0x80||(cmd===0x90&&vel===0)) release(m);
 }
 function note(access){
