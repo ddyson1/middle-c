@@ -14,6 +14,8 @@ export function buildKeys(){
   let [lo,hi]=S.range; if(window.innerWidth<700 && hi-lo>24){ lo=Math.max(lo, hi-24); }
   builtRange=lo+'-'+hi; keysEl.innerHTML=''; keyEls={};
   const whites=[]; for(let m=lo;m<=hi;m++) if(!isBlack(m%12)) whites.push(m); const n=whites.length;
+  // real pianos have long, slim keys: cap each white at ~66px and center
+  keysEl.style.maxWidth=(n*66)+'px';
   const mk=(m,cls)=>{ const b=document.createElement('button'); b.type='button'; b.className='key '+cls; b.dataset.midi=m; b.tabIndex=-1; b.setAttribute('aria-label', fullName(m)+(m===60?', middle C':'')); const pc=m%12;
     b.innerHTML=(m===60?'<span class="dot"></span>':'')+`<span class="lab">${isBlack(pc)?`${SHARP[pc]}<br>${FLAT[pc]}`:SHARP[pc]}</span>`+`<span class="fing"></span>`+`<span class="kcap"></span>`+(cls==='w'?`<span class="band" style="background:${NOTE_COLOR[pc]}"></span>`:''); keyEls[m]=b; return b; };
   whites.forEach((m,i)=>{ const b=mk(m,'w'); b.style.left=`calc(${i} * 100% / ${n} + var(--key-gap) / 2)`; b.style.width=`calc(100% / ${n} - var(--key-gap))`; keysEl.appendChild(b); });

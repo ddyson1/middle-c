@@ -1,8 +1,8 @@
 // Shared note math, naming, and small helpers.
 export const SHARP=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'], FLAT=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
 export const LETTER_PC=[0,2,4,5,7,9,11], PC_LETTER={0:0,2:1,4:2,5:3,7:4,9:5,11:6}, LETTERS='CDEFGAB';
-// muted, engraving-friendly note colors (one fixed hue per letter name)
-export const NOTE_COLOR={0:'#C2655C',2:'#C98F55',4:'#C9AE4F',5:'#7FA276',7:'#5F9E95',9:'#6B7FBB',11:'#9573AE'};
+// vivid note colors, one fixed hue per letter name (Sticker pop direction)
+export const NOTE_COLOR={0:'#E5484D',2:'#F28A2E',4:'#F5C518',5:'#46A758',7:'#12A594',9:'#3E63DD',11:'#8E4EC6'};
 export const isBlack=pc=>pc===1||pc===3||pc===6||pc===8||pc===10;
 export const octOf=m=>Math.floor(m/12)-1;
 export const fullName=m=>isBlack(m%12)?`${SHARP[m%12]}${octOf(m)} / ${FLAT[m%12]}${octOf(m)}`:`${SHARP[m%12]}${octOf(m)}`;

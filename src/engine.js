@@ -38,9 +38,8 @@ export function home(){
   else greet=`You’ve finished the path. Keep the notes fresh in Practice, play through the Songbook, or try anything in the Studio.`;
   const due=dueCount();
   const sub = dc>0 && nx ? `Last time: ${LESSONS[nx-2].name}.${due?` ${due} ${due===1?'note is':'notes are'} due for review.`:''}` : '';
-  const ROMAN=['I','II','III','IV','V','VI','VII'];
   const rows=LESSONS.map((L,i)=>{ const n=i+1, done=!!P.done[n], isNext=n===nx;
-    return `<li class="${isNext?'next':done?'done':'locked'}"><span class="num">${ROMAN[i]||n}</span><span class="t">${L.name}</span><span class="lead"></span><span class="tune">${TUNES[L.tune].title}</span>${done?`<button class="btn ghost" data-redo="${n}" type="button">redo</button>`:''}</li>`; }).join('');
+    return `<li class="${isNext?'next':done?'done':'locked'}"><span class="num">${n}</span><span class="t">${L.name}</span><span class="lead"></span><span class="tune">${TUNES[L.tune].title}</span>${done?`<button class="btn ghost" data-redo="${n}" type="button">Redo</button>`:''}</li>`; }).join('');
   view.innerHTML=`
   <section class="home">
     <p class="greet">${greet}</p>
@@ -126,7 +125,7 @@ function renderDrill(){
   const dots=D.items.map((_,i)=>`<span class="${i<D.idx?'on':i===D.idx?'cur':''}"></span>`).join('');
   let stageHTML='';
   if(it.t==='find'){ const nmx = isBlack(it.pc) ? (it.useFlat?FLAT[it.pc]:SHARP[it.pc]) : SHARP[it.pc]; it.shown=nmx;
-    stageHTML=`<div class="bigprompt"><div class="bigletter${nmx.length>1?' two':''}" aria-hidden="true" style="${colorsOn()&&!isBlack(it.pc)?'color:'+NOTE_COLOR[it.pc]:''}">${nmx}</div><div><p class="instr">Press ${nmx}</p><div class="dots" aria-label="Item ${D.idx+1} of ${D.items.length}">${dots}</div></div></div>`; }
+    stageHTML=`<div class="bigprompt"><div class="bigletter${nmx.length>1?' two':''}${colorsOn()&&!isBlack(it.pc)?' sticker':''}" aria-hidden="true" style="${colorsOn()&&!isBlack(it.pc)?'background:'+NOTE_COLOR[it.pc]:''}">${nmx}</div><div><p class="instr">Press ${nmx}</p><div class="dots" aria-label="Item ${D.idx+1} of ${D.items.length}">${dots}</div></div></div>`; }
   else if(it.t==='name'){ const pool=(S.lesson?LESSONS[S.lesson-1].steps.filter(s=>s.t==='drill').flatMap(s=>s.items):[]).filter(x=>x.t==='name').map(x=>x.m%12); const set=[...new Set([it.m%12,...pool,0,2,4,5,7,9,11])].filter(pc=>!isBlack(pc)); const opts=shuffle([it.m%12,...shuffle(set.filter(pc=>pc!==it.m%12)).slice(0,3)]); it.opts=opts;
     stageHTML=`<div><p class="instr">Which key is lit?</p><div class="opts" id="opts">${opts.map(pc=>`<button type="button" data-pc="${pc}">${SHARP[pc]}</button>`).join('')}</div><div class="dots">${dots}</div></div>`; }
   else if(it.t==='read'){ stageHTML=`<div class="bigprompt"><div class="single">${staffSingle(it.clef,it.d,it.acc)}</div><div><p class="instr">Which key is this?</p><p class="muted" style="margin:6px 0 0">Octave counts.</p><div class="dots">${dots}</div></div></div>`; }
